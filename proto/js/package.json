@@ -1,0 +1,15 @@
+{
+  "name": "asteroids",
+  "version": "0.1.0",
+  "description": "asteroids multiplayer",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "timw",
+  "license": "ISC",
+  "devDependencies": {
+    "source-map-loader": "^0.1.5",
+    "ts-loader": "^0.8.2"
+  }
+}
