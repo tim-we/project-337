@@ -52,6 +52,7 @@
 	var img = new Image();
 	img.src = "./tex/asteroid1.png";
 	var objects = [];
+	var particles = [];
 	var player;
 	window.addEventListener("load", function () {
 	    canvas = document.getElementById("display");
@@ -71,12 +72,14 @@
 	    ctx.fillStyle = "#000";
 	    ctx.fillRect(0, 0, canvas.width, canvas.height);
 	}
+	function toCanvasCoordinates(pos) {
+	    return new Assets_1.Vector2(config_1.WORLD_SIZE + pos.x, config_1.WORLD_SIZE + pos.y);
+	}
 	function drawGameObject(o) {
-	    var worldX = config_1.WORLD_SIZE + o.Position.x;
-	    var worldY = config_1.WORLD_SIZE + o.Position.y;
+	    var canvasPos = toCanvasCoordinates(o.Position);
 	    // http://stackoverflow.com/questions/17411991/html5-canvas-rotate-image
 	    ctx.save();
-	    ctx.translate(worldX, worldY);
+	    ctx.translate(canvasPos.x, canvasPos.y);
 	    ctx.rotate(o.Rotation * Math.PI / 180);
 	    ctx.drawImage(o.Texture, -o.Texture.width * 0.5, -o.Texture.width * 0.5);
 	    ctx.restore();
@@ -85,11 +88,23 @@
 	    window.requestAnimationFrame(mainloop);
 	    var td = 1 / 60; //time diff
 	    clearctx();
+	    //draw particles
+	    for (var i = 0; i < particles.length; i++) {
+	        var p = particles[i];
+	        var cp = toCanvasCoordinates(p.Position);
+	        ctx.fillStyle = "#fff";
+	        ctx.fillRect(cp.x, cp.y, 2, 2);
+	        p.move(td);
+	    }
+	    //draw gameobjects
 	    for (var i = 0; i < objects.length; i++) {
 	        var o = objects[i];
 	        drawGameObject(o);
 	        o.move(td);
 	        player.Rotation += td * 2;
+	    }
+	    if (particles.length < 100 && Math.random() < 0.1) {
+	        particles.push(player.shoot());
 	    }
 	}
 
@@ -101,6 +116,7 @@
 	"use strict";
 	exports.WORLD_SIZE = 200;
 	exports.ASTEROID_SPEED = 50;
+	exports.BULLET_SPEED = 50;
 
 
 /***/ },
@@ -126,6 +142,9 @@
 	        enumerable: true,
 	        configurable: true
 	    });
+	    Vector2.prototype.clone = function () {
+	        return new Vector2(this.x, this.y);
+	    };
 	    return Vector2;
 	}());
 	exports.Vector2 = Vector2;
@@ -146,7 +165,7 @@
 	var tex = __webpack_require__(4);
 	var MovingObject = (function () {
 	    function MovingObject() {
-	        this.Rotation = 0;
+	        this._alpha = 0;
 	    }
 	    MovingObject.prototype.move = function (t) {
 	        var p = this.Position;
@@ -189,9 +208,35 @@
 	        //pick random texture
 	        this.Texture = tex.ASTEROIDS[Math.floor(Math.random() * tex.ASTEROIDS.length)];
 	    }
+	    Object.defineProperty(Asteroid.prototype, "Rotation", {
+	        get: function () { return this._alpha; },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    return Asteroid;
 	}(MovingObject));
 	exports.Asteroid = Asteroid;
+	var ShootingParticle = (function (_super) {
+	    __extends(ShootingParticle, _super);
+	    function ShootingParticle(pos, vel) {
+	        _super.call(this);
+	        this.alive = true;
+	        this.Position = pos.clone();
+	        this.Velocity = vel.clone();
+	    }
+	    Object.defineProperty(ShootingParticle.prototype, "isAlive", {
+	        get: function () { return this.alive; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ShootingParticle.prototype, "Rotation", {
+	        get: function () { return this._alpha; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    return ShootingParticle;
+	}(MovingObject));
+	exports.ShootingParticle = ShootingParticle;
 	var Player = (function (_super) {
 	    __extends(Player, _super);
 	    function Player() {
@@ -199,7 +244,27 @@
 	        this.Position = new Assets_1.Vector2();
 	        this.Velocity = new Assets_1.Vector2();
 	        this.Texture = tex.PLAYER;
+	        this.Health = 100;
 	    }
+	    Object.defineProperty(Player.prototype, "Rotation", {
+	        get: function () { return this._alpha; },
+	        set: function (a) {
+	            this._alpha = a;
+	            this.ShootingVector = new Assets_1.Vector2(Math.sin(a), Math.cos(a));
+	            this.ShootingVector.scale(config_1.BULLET_SPEED);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Player.prototype, "Health", {
+	        get: function () { return this._health; },
+	        set: function (h) { this._health = Math.max(0, h); },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Player.prototype.shoot = function () {
+	        return new ShootingParticle(this.Position, this.ShootingVector);
+	    };
 	    return Player;
 	}(MovingObject));
 	exports.Player = Player;

@@ -15,4 +15,8 @@ export class Vector2 {
 	get len2():number {
 		return this.x*this.x + this.y*this.y;
 	}
+
+	public clone():Vector2 {
+		return new Vector2(this.x,this.y);
+	}
 }

@@ -1,4 +1,4 @@
-import {WORLD_SIZE, ASTEROID_SPEED} from "./config";
+import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED} from "./config";
 import {Vector2} from "./Assets";
 import * as tex from "./Textures";
 
@@ -12,12 +12,23 @@ export interface GameObject {
 	distance2To(point:Vector2):number;
 }
 
+export interface Particle {
+	Position:Vector2;
+	Rotation:number;
+
+	isAlive:boolean;
+
+	move(t:number):void;
+
+	distance2To(point:Vector2):number;
+}
+
 class MovingObject {
 
 	Position:Vector2;
 	Velocity:Vector2;
 
-	Rotation:number = 0;
+	protected _alpha = 0;
 
 	public move(t:number) {
 		let p = this.Position;
@@ -63,11 +74,36 @@ export class Asteroid extends MovingObject implements GameObject {
 		
 	}
 
+	get Rotation() { return this._alpha; }
+}
+
+export class ShootingParticle extends MovingObject implements Particle {
+
+	Texture:HTMLImageElement;
+
+	alive:boolean;
+
+	constructor(pos:Vector2, vel:Vector2) {
+		super();
+
+		this.alive = true;
+
+		this.Position = pos.clone();
+		this.Velocity = vel.clone();
+	}
+
+	get isAlive() { return this.alive; }
+	get Rotation() { return this._alpha; }
+
 }
 
 export class Player extends MovingObject implements GameObject {
 
 	Texture:HTMLImageElement;
+
+	private _health:number;
+
+	ShootingVector:Vector2;
 
 	constructor() {
 		super();
@@ -76,6 +112,23 @@ export class Player extends MovingObject implements GameObject {
 		this.Velocity = new Vector2();
 
 		this.Texture = tex.PLAYER;
+
+		this.Health = 100;
+	}
+
+	set Rotation(a:number) { 
+		this._alpha = a;
+
+		this.ShootingVector = new Vector2(Math.sin(a), Math.cos(a));
+		this.ShootingVector.scale(BULLET_SPEED);
+	}
+	get Rotation() { return this._alpha; }
+
+	get Health() { return this._health; }
+	set Health(h:number) { this._health = Math.max(0,h); }
+
+	public shoot():ShootingParticle {
+		return new ShootingParticle(this.Position, this.ShootingVector);
 	}
 
 }

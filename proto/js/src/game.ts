@@ -1,6 +1,6 @@
 import {WORLD_SIZE} from "./config";
 import {Vector2} from "./Assets";
-import {GameObject, Asteroid, Player} from "./GameObjects";
+import {GameObject, Particle, Asteroid, Player} from "./GameObjects";
 
 var canvas:HTMLCanvasElement,
 	ctx:CanvasRenderingContext2D;
@@ -9,7 +9,8 @@ var img:HTMLImageElement = new Image();
 img.src = "./tex/asteroid1.png";
 
 var objects:GameObject[] = [];
-var player:GameObject;
+var particles:Particle[] = [];
+var player:Player;
 
 window.addEventListener("load", function(){	
 	canvas = <HTMLCanvasElement>document.getElementById("display");
@@ -37,14 +38,17 @@ function clearctx() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+function toCanvasCoordinates(pos:Vector2):Vector2 {
+	return new Vector2(WORLD_SIZE + pos.x, WORLD_SIZE + pos.y);
+}
+
 function drawGameObject(o:GameObject) {
-	let worldX = WORLD_SIZE + o.Position.x;
-	let worldY = WORLD_SIZE + o.Position.y;
+	let canvasPos = toCanvasCoordinates(o.Position);
 
 	// http://stackoverflow.com/questions/17411991/html5-canvas-rotate-image
 	ctx.save();
 
-    ctx.translate(worldX, worldY);
+    ctx.translate(canvasPos.x, canvasPos.y);
 
     ctx.rotate(o.Rotation*Math.PI/180);
 
@@ -59,7 +63,19 @@ function mainloop():void {
 	let td:number = 1/60; //time diff
 
 	clearctx();
+	//draw particles
+	for(let i=0; i<particles.length; i++) {
+		let p:Particle = particles[i];
 
+		let cp:Vector2 = toCanvasCoordinates(p.Position);
+
+		ctx.fillStyle = "#fff";
+		ctx.fillRect(cp.x,cp.y,2,2);
+
+		p.move(td);
+	}
+
+	//draw gameobjects
 	for(let i=0; i<objects.length; i++) {
 		let o:GameObject = objects[i];
 		
@@ -69,4 +85,7 @@ function mainloop():void {
 		player.Rotation += td * 2;
 	}
 	
+	if(particles.length < 100 && Math.random() < 0.1) {
+		particles.push(player.shoot());
+	}
 }
