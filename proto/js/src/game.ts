@@ -80,12 +80,19 @@ function mainloop():void {
 	clearctx();
 
 	for(let i = 0; i<stars.length;i++) {
-
 		drawstar(stars[i]);
 	}
+
 	//draw particles
 	for(let i=0; i<particles.length; i++) {
 		let p:Particle = particles[i];
+
+		//garbage-collect particles
+		if(!p.isAlive) {	
+			particles.splice(i, 1);
+			i--;
+			continue;
+		}
 
 		let cp:Vector2 = toCanvasCoordinates(p.Position);
 

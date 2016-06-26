@@ -106,6 +106,12 @@
 	    //draw particles
 	    for (var i = 0; i < particles.length; i++) {
 	        var p = particles[i];
+	        //garbage-collect particles
+	        if (!p.isAlive) {
+	            particles.splice(i, 1);
+	            i--;
+	            continue;
+	        }
 	        var cp = toCanvasCoordinates(p.Position);
 	        ctx.fillStyle = "#fff";
 	        ctx.fillRect(cp.x, cp.y, 2, 2);
@@ -153,6 +159,7 @@
 	exports.PLAYER_ACCELERATION = 200;
 	exports.PLAYER_ROTATION_SPEED = 4;
 	exports.PLAYER_MAX_SPEED2 = Math.pow(1000, 2);
+	exports.BULLET_LIFETIME = 4.2 * 1000;
 
 
 /***/ },
@@ -300,11 +307,12 @@
 	    function ShootingParticle(pos, vel) {
 	        _super.call(this);
 	        this.alive = true;
+	        this.birth = Date.now();
 	        this.Position = pos;
 	        this.Velocity = vel;
 	    }
 	    Object.defineProperty(ShootingParticle.prototype, "isAlive", {
-	        get: function () { return this.alive; },
+	        get: function () { return this.alive && (Date.now() - this.birth) < config_1.BULLET_LIFETIME; },
 	        enumerable: true,
 	        configurable: true
 	    });
@@ -342,8 +350,9 @@
 	        configurable: true
 	    });
 	    Player.prototype.shoot = function () {
+	        var p = Assets_1.Vector2.add(this.Position, this.DirectionVector.scale(20));
 	        var v = Assets_1.Vector2.add(this.Velocity, this.DirectionVector.scale(config_1.BULLET_SPEED));
-	        return new ShootingParticle(this.Position.clone(), v);
+	        return new ShootingParticle(p, v);
 	    };
 	    Player.prototype.accelerate = function (t) {
 	        var v = this.DirectionVector.scale(config_1.PLAYER_ACCELERATION * t);

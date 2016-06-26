@@ -1,4 +1,4 @@
-import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED, PLAYER_ACCELERATION, PLAYER_MAX_SPEED2} from "./config";
+import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED, PLAYER_ACCELERATION, PLAYER_MAX_SPEED2, BULLET_LIFETIME} from "./config";
 import {Vector2} from "./Assets";
 import * as tex from "./Textures";
 
@@ -57,7 +57,7 @@ class MovingObject {
 
 export class Asteroid extends MovingObject implements GameObject {	
 
-	Texture:HTMLImageElement;
+	public Texture:HTMLImageElement;
 
 	constructor(pos:Vector2) {
 		super();
@@ -79,20 +79,22 @@ export class Asteroid extends MovingObject implements GameObject {
 
 export class ShootingParticle extends MovingObject implements Particle {
 
-	Texture:HTMLImageElement;
+	public Texture:HTMLImageElement;
 
-	alive:boolean;
+	private alive:boolean;
+	private birth:number;
 
 	constructor(pos:Vector2, vel:Vector2) {
 		super();
 
 		this.alive = true;
+		this.birth = Date.now();
 
 		this.Position = pos;
 		this.Velocity = vel;
 	}
 
-	get isAlive() { return this.alive; }
+	get isAlive() { return this.alive && (Date.now()-this.birth)<BULLET_LIFETIME; }
 	get Rotation() { return this._alpha; }
 
 }
@@ -128,8 +130,9 @@ export class Player extends MovingObject implements GameObject {
 	set Health(h:number) { this._health = Math.max(0,h); }
 
 	public shoot():ShootingParticle {
+		let p:Vector2 = Vector2.add(this.Position, this.DirectionVector.scale(20));
 		let v:Vector2 = Vector2.add(this.Velocity, this.DirectionVector.scale(BULLET_SPEED));
-		return new ShootingParticle(this.Position.clone(), v);
+		return new ShootingParticle(p, v);
 	}
 
 	public accelerate(t:number) {
@@ -151,6 +154,9 @@ export class Player extends MovingObject implements GameObject {
 export class star{
 	Position:Vector2;
 	constructor() {
-		this.Position = new Vector2(Math.random()*WORLD_SIZE,Math.random()*WORLD_SIZE);
+		this.Position = new Vector2(
+				Math.random() * WORLD_SIZE,
+				Math.random() * WORLD_SIZE
+			);
 	} 
 }
