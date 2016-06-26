@@ -1,4 +1,4 @@
-import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED, PLAYER_ACCELERATION} from "./config";
+import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED, PLAYER_ACCELERATION, PLAYER_MAX_SPEED2} from "./config";
 import {Vector2} from "./Assets";
 import * as tex from "./Textures";
 
@@ -136,6 +136,14 @@ export class Player extends MovingObject implements GameObject {
 		let v = this.DirectionVector.scale(PLAYER_ACCELERATION * t);
 		this.Velocity.x += v.x;
 		this.Velocity.y += v.y;
+
+		let max = PLAYER_MAX_SPEED2;
+
+		if(this.Velocity.len2 > max) {
+			let f = Math.sqrt( max / this.Velocity.len2 );
+
+			this.Velocity = this.Velocity.scale(f);
+		}
 	}
 }
 

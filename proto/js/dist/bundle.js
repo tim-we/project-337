@@ -149,9 +149,10 @@
 	"use strict";
 	exports.WORLD_SIZE = 400;
 	exports.ASTEROID_SPEED = 50;
-	exports.BULLET_SPEED = 2500;
+	exports.BULLET_SPEED = 100;
 	exports.PLAYER_ACCELERATION = 200;
 	exports.PLAYER_ROTATION_SPEED = 4;
+	exports.PLAYER_MAX_SPEED2 = Math.pow(1000, 2);
 
 
 /***/ },
@@ -348,13 +349,18 @@
 	        var v = this.DirectionVector.scale(config_1.PLAYER_ACCELERATION * t);
 	        this.Velocity.x += v.x;
 	        this.Velocity.y += v.y;
+	        var max = config_1.PLAYER_MAX_SPEED2;
+	        if (this.Velocity.len2 > max) {
+	            var f = Math.sqrt(max / this.Velocity.len2);
+	            this.Velocity = this.Velocity.scale(f);
+	        }
 	    };
 	    return Player;
 	}(MovingObject));
 	exports.Player = Player;
 	var star = (function () {
 	    function star() {
-	        this.Position = new Assets_1.Vector2(Math.random() * config_1.WORLD_SIZE * 2, Math.random() * config_1.WORLD_SIZE * 2);
+	        this.Position = new Assets_1.Vector2(Math.random() * config_1.WORLD_SIZE, Math.random() * config_1.WORLD_SIZE);
 	    }
 	    return star;
 	}());
