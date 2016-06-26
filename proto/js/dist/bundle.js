@@ -55,6 +55,7 @@
 	var objects = [];
 	var particles = [];
 	var player;
+	var allow_shoot = true;
 	window.addEventListener("load", function () {
 	    canvas = document.getElementById("display");
 	    /*canvas.width = window.innerWidth;
@@ -113,11 +114,17 @@
 	    if (dir != 0) {
 	        player.Rotation += dir * config_1.PLAYER_ROTATION_SPEED * td;
 	    }
-	    if (UserInput.isPressed("fire")) {
-	        particles.push(player.shoot());
-	    }
 	    if (UserInput.isPressed("up")) {
 	        player.accelerate(td);
+	    }
+	    if (UserInput.isPressed("fire")) {
+	        if (allow_shoot) {
+	            particles.push(player.shoot());
+	            allow_shoot = false;
+	        }
+	    }
+	    else {
+	        allow_shoot = true;
 	    }
 	}
 

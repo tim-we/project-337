@@ -12,6 +12,7 @@ img.src = "./tex/asteroid1.png";
 var objects:GameObject[] = [];
 var particles:Particle[] = [];
 var player:Player;
+var allow_shoot:boolean = true;
 
 window.addEventListener("load", function(){	
 	canvas = <HTMLCanvasElement>document.getElementById("display");
@@ -91,12 +92,17 @@ function mainloop():void {
 	if(dir != 0) { player.Rotation += dir * PLAYER_ROTATION_SPEED * td ; }
 	
 
-	if(UserInput.isPressed("fire")) {
-		particles.push(player.shoot());
+	if(UserInput.isPressed("up")) {
+		player.accelerate(td);		
 	}
 
-	if(UserInput.isPressed("up")) {
-		player.accelerate(td);
+	if(UserInput.isPressed("fire")) {
+		if(allow_shoot) {
+			particles.push(player.shoot());
+			allow_shoot = false;
+		}		
+	} else {
+		allow_shoot = true;
 	}
 
 }
