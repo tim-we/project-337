@@ -6,4 +6,4 @@ export var BULLET_SPEED = 100;
 
 export var PLAYER_ACCELERATION = 200;
 
-export var PLAYER_ROTATION_SPEED = 200;
+export var PLAYER_ROTATION_SPEED = 4;

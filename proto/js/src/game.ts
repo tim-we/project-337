@@ -51,7 +51,7 @@ function drawGameObject(o:GameObject) {
 
     ctx.translate(canvasPos.x, canvasPos.y);
 
-    ctx.rotate(o.Rotation*Math.PI/180);
+    ctx.rotate(o.Rotation);
 
     ctx.drawImage(o.Texture,-o.Texture.width*0.5,-o.Texture.width*0.5);
 

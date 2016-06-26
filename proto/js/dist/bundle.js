@@ -81,7 +81,7 @@
 	    // http://stackoverflow.com/questions/17411991/html5-canvas-rotate-image
 	    ctx.save();
 	    ctx.translate(canvasPos.x, canvasPos.y);
-	    ctx.rotate(o.Rotation * Math.PI / 180);
+	    ctx.rotate(o.Rotation);
 	    ctx.drawImage(o.Texture, -o.Texture.width * 0.5, -o.Texture.width * 0.5);
 	    ctx.restore();
 	}
@@ -131,7 +131,7 @@
 	exports.ASTEROID_SPEED = 50;
 	exports.BULLET_SPEED = 100;
 	exports.PLAYER_ACCELERATION = 200;
-	exports.PLAYER_ROTATION_SPEED = 200;
+	exports.PLAYER_ROTATION_SPEED = 4;
 
 
 /***/ },
