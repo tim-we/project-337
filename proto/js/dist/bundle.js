@@ -97,7 +97,7 @@
 	        ctx.fillRect(cp.x, cp.y, 2, 2);
 	        p.move(td);
 	    }
-	    //draw gameobjects
+	    //draw gameobjects (includes player)
 	    for (var i = 0; i < objects.length; i++) {
 	        var o = objects[i];
 	        drawGameObject(o);
@@ -110,10 +110,18 @@
 	    if (UserInput.isPressed("right")) {
 	        dir += 1;
 	    }
-	    player.Rotation += dir * td * 100;
+	    player.Rotation += dir * config_1.PLAYER_ROTATION_SPEED * td;
 	    if (UserInput.isPressed("fire")) {
 	        particles.push(player.shoot());
 	    }
+	    var a = 0;
+	    if (UserInput.isPressed("up")) {
+	        a += 1;
+	    }
+	    if (UserInput.isPressed("down")) {
+	        a -= 1;
+	    }
+	    player.accelerate(td * a);
 	}
 
 
@@ -122,9 +130,11 @@
 /***/ function(module, exports) {
 
 	"use strict";
-	exports.WORLD_SIZE = 200;
+	exports.WORLD_SIZE = 400;
 	exports.ASTEROID_SPEED = 50;
-	exports.BULLET_SPEED = 50;
+	exports.BULLET_SPEED = 100;
+	exports.PLAYER_ACCELERATION = 200;
+	exports.PLAYER_ROTATION_SPEED = 200;
 
 
 /***/ },
@@ -140,8 +150,7 @@
 	        this.y = y;
 	    }
 	    Vector2.prototype.scale = function (f) {
-	        this.x = f * this.x;
-	        this.y = f * this.y;
+	        return new Vector2(f * this.x, f * this.y);
 	    };
 	    Object.defineProperty(Vector2.prototype, "len2", {
 	        get: function () {
@@ -152,6 +161,9 @@
 	    });
 	    Vector2.prototype.clone = function () {
 	        return new Vector2(this.x, this.y);
+	    };
+	    Vector2.add = function (a, b) {
+	        return new Vector2(a.x + b.x, a.y + b.y);
 	    };
 	    return Vector2;
 	}());
@@ -252,8 +264,8 @@
 	        this.Position = pos;
 	        //random direction
 	        var alpha = Math.random() * 2 * Math.PI;
-	        this.Velocity = new Assets_1.Vector2(Math.sin(alpha), Math.cos(alpha));
-	        this.Velocity.scale(config_1.ASTEROID_SPEED);
+	        this.Velocity = new Assets_1.Vector2(Math.cos(alpha), Math.sin(alpha));
+	        this.Velocity = this.Velocity.scale(config_1.ASTEROID_SPEED);
 	        //pick random texture
 	        this.Texture = tex.ASTEROIDS[Math.floor(Math.random() * tex.ASTEROIDS.length)];
 	    }
@@ -270,8 +282,8 @@
 	    function ShootingParticle(pos, vel) {
 	        _super.call(this);
 	        this.alive = true;
-	        this.Position = pos.clone();
-	        this.Velocity = vel.clone();
+	        this.Position = pos;
+	        this.Velocity = vel;
 	    }
 	    Object.defineProperty(ShootingParticle.prototype, "isAlive", {
 	        get: function () { return this.alive; },
@@ -299,8 +311,7 @@
 	        get: function () { return this._alpha; },
 	        set: function (a) {
 	            this._alpha = a;
-	            this.ShootingVector = new Assets_1.Vector2(Math.sin(a), Math.cos(a));
-	            this.ShootingVector.scale(config_1.BULLET_SPEED);
+	            this.DirectionVector = new Assets_1.Vector2(Math.cos(a), Math.sin(a));
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -312,7 +323,13 @@
 	        configurable: true
 	    });
 	    Player.prototype.shoot = function () {
-	        return new ShootingParticle(this.Position, this.ShootingVector);
+	        var v = Assets_1.Vector2.add(this.Velocity, this.DirectionVector.scale(config_1.BULLET_SPEED));
+	        return new ShootingParticle(this.Position.clone(), v);
+	    };
+	    Player.prototype.accelerate = function (t) {
+	        var v = this.DirectionVector.scale(config_1.PLAYER_ACCELERATION * t);
+	        this.Velocity.x += v.x;
+	        this.Velocity.y += v.y;
 	    };
 	    return Player;
 	}(MovingObject));

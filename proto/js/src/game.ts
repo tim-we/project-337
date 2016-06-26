@@ -1,4 +1,4 @@
-import {WORLD_SIZE} from "./config";
+import {WORLD_SIZE, PLAYER_ROTATION_SPEED} from "./config";
 import {Vector2} from "./Assets";
 import * as UserInput from "./UserInput";
 import {GameObject, Particle, Asteroid, Player} from "./GameObjects";
@@ -76,22 +76,27 @@ function mainloop():void {
 		p.move(td);
 	}
 
-	//draw gameobjects
+	//draw gameobjects (includes player)
 	for(let i=0; i<objects.length; i++) {
 		let o:GameObject = objects[i];
 		
 		drawGameObject(o);
 		o.move(td);
-
 	}
 	
 	let dir = 0;
 		if(UserInput.isPressed("left")) { dir -= 1; }
 		if(UserInput.isPressed("right")) { dir += 1; }
 	
-	player.Rotation += dir * td * 100;
+	player.Rotation += dir * PLAYER_ROTATION_SPEED * td ;
 
 	if(UserInput.isPressed("fire")) {
 		particles.push(player.shoot());
 	}
+
+	let a = 0;
+		if(UserInput.isPressed("up")) { a += 1; }
+		if(UserInput.isPressed("down")) { a -= 1; }
+	
+	player.accelerate(td * a);
 }

@@ -1,4 +1,4 @@
-import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED} from "./config";
+import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED, PLAYER_ACCELERATION} from "./config";
 import {Vector2} from "./Assets";
 import * as tex from "./Textures";
 
@@ -66,8 +66,8 @@ export class Asteroid extends MovingObject implements GameObject {
 
 		//random direction
 		let alpha = Math.random() * 2 * Math.PI;
-		this.Velocity = new Vector2(Math.sin(alpha), Math.cos(alpha));	
-		this.Velocity.scale(ASTEROID_SPEED);
+		this.Velocity = new Vector2(Math.cos(alpha), Math.sin(alpha));	
+		this.Velocity = this.Velocity.scale(ASTEROID_SPEED);
 
 		//pick random texture
 		this.Texture = tex.ASTEROIDS[Math.floor(Math.random() * tex.ASTEROIDS.length)];
@@ -88,8 +88,8 @@ export class ShootingParticle extends MovingObject implements Particle {
 
 		this.alive = true;
 
-		this.Position = pos.clone();
-		this.Velocity = vel.clone();
+		this.Position = pos;
+		this.Velocity = vel;
 	}
 
 	get isAlive() { return this.alive; }
@@ -103,7 +103,7 @@ export class Player extends MovingObject implements GameObject {
 
 	private _health:number;
 
-	ShootingVector:Vector2;
+	DirectionVector:Vector2;
 
 	constructor() {
 		super();
@@ -119,8 +119,7 @@ export class Player extends MovingObject implements GameObject {
 	set Rotation(a:number) { 
 		this._alpha = a;
 
-		this.ShootingVector = new Vector2(Math.sin(a), Math.cos(a));
-		this.ShootingVector.scale(BULLET_SPEED);
+		this.DirectionVector = new Vector2(Math.cos(a), Math.sin(a));
 	}
 	get Rotation() { return this._alpha; }
 
@@ -128,7 +127,13 @@ export class Player extends MovingObject implements GameObject {
 	set Health(h:number) { this._health = Math.max(0,h); }
 
 	public shoot():ShootingParticle {
-		return new ShootingParticle(this.Position, this.ShootingVector);
+		let v:Vector2 = Vector2.add(this.Velocity, this.DirectionVector.scale(BULLET_SPEED));
+		return new ShootingParticle(this.Position.clone(), v);
 	}
 
+	public accelerate(t:number) {
+		let v = this.DirectionVector.scale(PLAYER_ACCELERATION * t);
+		this.Velocity.x += v.x;
+		this.Velocity.y += v.y;
+	}
 }

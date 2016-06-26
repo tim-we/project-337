@@ -7,9 +7,8 @@ export class Vector2 {
 		this.y = y;
 	}
 
-	public scale(f:number):void {
-		this.x = f * this.x;
-		this.y = f * this.y;
+	public scale(f:number):Vector2 {
+		return new Vector2(f * this.x, f * this.y);
 	}
 
 	get len2():number {
@@ -18,5 +17,12 @@ export class Vector2 {
 
 	public clone():Vector2 {
 		return new Vector2(this.x,this.y);
+	}
+
+	public static add(a:Vector2, b:Vector2):Vector2 {
+		return new Vector2(
+			a.x + b.x,
+			a.y + b.y
+		);
 	}
 }
