@@ -177,7 +177,7 @@
 	                p.x = (p.x - config_1.WORLD_SIZE) - config_1.WORLD_SIZE;
 	            }
 	            else {
-	                p.x = config_1.WORLD_SIZE + (config_1.WORLD_SIZE - p.x);
+	                p.x = config_1.WORLD_SIZE + (config_1.WORLD_SIZE + p.x);
 	            }
 	        }
 	        while (Math.abs(p.y) > config_1.WORLD_SIZE) {
@@ -185,7 +185,7 @@
 	                p.y = (p.y - config_1.WORLD_SIZE) - config_1.WORLD_SIZE;
 	            }
 	            else {
-	                p.y = config_1.WORLD_SIZE + (config_1.WORLD_SIZE - p.y);
+	                p.y = config_1.WORLD_SIZE + (config_1.WORLD_SIZE + p.y);
 	            }
 	        }
 	    };

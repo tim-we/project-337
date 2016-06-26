@@ -39,11 +39,11 @@ class MovingObject {
 		//repeating world
 		while(Math.abs(p.x) > WORLD_SIZE) {
 			if(p.x > WORLD_SIZE) { p.x = (p.x - WORLD_SIZE) - WORLD_SIZE; }
-			else { p.x = WORLD_SIZE + (WORLD_SIZE - p.x); }
+			else { p.x = WORLD_SIZE + (WORLD_SIZE + p.x); }
 		}
 		while(Math.abs(p.y) > WORLD_SIZE) {
 			if(p.y > WORLD_SIZE) { p.y = (p.y - WORLD_SIZE) - WORLD_SIZE; }
-			else { p.y = WORLD_SIZE + (WORLD_SIZE - p.y); }
+			else { p.y = WORLD_SIZE + (WORLD_SIZE + p.y); }
 		}
 	}
 
