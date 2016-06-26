@@ -88,15 +88,15 @@ function mainloop():void {
 		if(UserInput.isPressed("left")) { dir -= 1; }
 		if(UserInput.isPressed("right")) { dir += 1; }
 	
-	player.Rotation += dir * PLAYER_ROTATION_SPEED * td ;
+	if(dir != 0) { player.Rotation += dir * PLAYER_ROTATION_SPEED * td ; }
+	
 
 	if(UserInput.isPressed("fire")) {
 		particles.push(player.shoot());
 	}
 
-	let a = 0;
-		if(UserInput.isPressed("up")) { a += 1; }
-		if(UserInput.isPressed("down")) { a -= 1; }
-	
-	player.accelerate(td * a);
+	if(UserInput.isPressed("up")) {
+		player.accelerate(td);
+	}
+
 }

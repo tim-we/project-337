@@ -110,18 +110,15 @@
 	    if (UserInput.isPressed("right")) {
 	        dir += 1;
 	    }
-	    player.Rotation += dir * config_1.PLAYER_ROTATION_SPEED * td;
+	    if (dir != 0) {
+	        player.Rotation += dir * config_1.PLAYER_ROTATION_SPEED * td;
+	    }
 	    if (UserInput.isPressed("fire")) {
 	        particles.push(player.shoot());
 	    }
-	    var a = 0;
 	    if (UserInput.isPressed("up")) {
-	        a += 1;
+	        player.accelerate(td);
 	    }
-	    if (UserInput.isPressed("down")) {
-	        a -= 1;
-	    }
-	    player.accelerate(td * a);
 	}
 
 
@@ -304,6 +301,7 @@
 	        _super.call(this);
 	        this.Position = new Assets_1.Vector2();
 	        this.Velocity = new Assets_1.Vector2();
+	        this.DirectionVector = new Assets_1.Vector2(1, 0);
 	        this.Texture = tex.PLAYER;
 	        this.Health = 100;
 	    }

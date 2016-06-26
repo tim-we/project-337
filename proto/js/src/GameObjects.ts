@@ -110,6 +110,7 @@ export class Player extends MovingObject implements GameObject {
 
 		this.Position = new Vector2();
 		this.Velocity = new Vector2();
+		this.DirectionVector = new Vector2(1,0);
 
 		this.Texture = tex.PLAYER;
 
