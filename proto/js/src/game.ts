@@ -1,5 +1,6 @@
 import {WORLD_SIZE} from "./config";
 import {Vector2} from "./Assets";
+import * as UserInput from "./UserInput";
 import {GameObject, Particle, Asteroid, Player} from "./GameObjects";
 
 var canvas:HTMLCanvasElement,
@@ -82,10 +83,15 @@ function mainloop():void {
 		drawGameObject(o);
 		o.move(td);
 
-		player.Rotation += td * 2;
 	}
 	
-	if(particles.length < 100 && Math.random() < 0.1) {
+	let dir = 0;
+		if(UserInput.isPressed("left")) { dir -= 1; }
+		if(UserInput.isPressed("right")) { dir += 1; }
+	
+	player.Rotation += dir * td * 100;
+
+	if(UserInput.isPressed("fire")) {
 		particles.push(player.shoot());
 	}
 }

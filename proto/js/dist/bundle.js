@@ -47,7 +47,8 @@
 	"use strict";
 	var config_1 = __webpack_require__(1);
 	var Assets_1 = __webpack_require__(2);
-	var GameObjects_1 = __webpack_require__(3);
+	var UserInput = __webpack_require__(3);
+	var GameObjects_1 = __webpack_require__(4);
 	var canvas, ctx;
 	var img = new Image();
 	img.src = "./tex/asteroid1.png";
@@ -101,9 +102,16 @@
 	        var o = objects[i];
 	        drawGameObject(o);
 	        o.move(td);
-	        player.Rotation += td * 2;
 	    }
-	    if (particles.length < 100 && Math.random() < 0.1) {
+	    var dir = 0;
+	    if (UserInput.isPressed("left")) {
+	        dir -= 1;
+	    }
+	    if (UserInput.isPressed("right")) {
+	        dir += 1;
+	    }
+	    player.Rotation += dir * td * 100;
+	    if (UserInput.isPressed("fire")) {
 	        particles.push(player.shoot());
 	    }
 	}
@@ -152,6 +160,47 @@
 
 /***/ },
 /* 3 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var keys_pressed = [];
+	window.addEventListener("keydown", function (e) {
+	    keys_pressed.push(e.keyCode || 32);
+	});
+	window.addEventListener("keyup", function (e) {
+	    var i;
+	    while ((i = keys_pressed.indexOf(e.keyCode)) > -1) {
+	        keys_pressed.splice(i, 1);
+	    }
+	});
+	//http://stackoverflow.com/questions/6199038/javascript-event-triggered-by-pressing-space
+	var mappings = {
+	    "fire": 32,
+	    "space": 32,
+	    "enter": 13,
+	    "esc": 27,
+	    "ctrl": 17,
+	    "alt": 18,
+	    "shift": 16,
+	    "up": 38,
+	    "down": 40,
+	    "right": 39,
+	    "left": 37
+	};
+	function isPressed(id) {
+	    if (mappings[id]) {
+	        var i = keys_pressed.indexOf(mappings[id]);
+	        return i > -1;
+	    }
+	    else {
+	        throw new Error("Key mapping not supported.");
+	    }
+	}
+	exports.isPressed = isPressed;
+
+
+/***/ },
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -162,7 +211,7 @@
 	};
 	var config_1 = __webpack_require__(1);
 	var Assets_1 = __webpack_require__(2);
-	var tex = __webpack_require__(4);
+	var tex = __webpack_require__(5);
 	var MovingObject = (function () {
 	    function MovingObject() {
 	        this._alpha = 0;
@@ -271,7 +320,7 @@
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	"use strict";
