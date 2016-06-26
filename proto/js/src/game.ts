@@ -1,7 +1,7 @@
 import {WORLD_SIZE, PLAYER_ROTATION_SPEED} from "./config";
 import {Vector2} from "./Assets";
 import * as UserInput from "./UserInput";
-import {GameObject, Particle, Asteroid, Player} from "./GameObjects";
+import {GameObject, Particle, Asteroid, Player, star} from "./GameObjects";
 
 var canvas:HTMLCanvasElement,
 	ctx:CanvasRenderingContext2D;
@@ -13,6 +13,7 @@ var objects:GameObject[] = [];
 var particles:Particle[] = [];
 var player:Player;
 var allow_shoot:boolean = true;
+var stars:star[] = [];
 
 window.addEventListener("load", function(){	
 	canvas = <HTMLCanvasElement>document.getElementById("display");
@@ -27,6 +28,10 @@ window.addEventListener("load", function(){
 	//add 10 asteroids
 	for(let i=0; i<10; i++) {
 		objects.push(new Asteroid(new Vector2(30,20)));
+	}
+
+	for(let i=0; i<20; i++) {
+		stars.push(new star());
 	}
 
 	player = new Player();
@@ -59,12 +64,25 @@ function drawGameObject(o:GameObject) {
     ctx.restore();
 }
 
+function drawstar(s:star) {
+	let canvasPos = toCanvasCoordinates(s.Position);
+	ctx.fillStyle = "#FFF";
+	ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
+	ctx.fillRect(canvasPos.x+1, canvasPos.y, 1, 3);
+
+}
+
 function mainloop():void {
 	window.requestAnimationFrame(mainloop);
 
 	let td:number = 1/60; //time diff
 
 	clearctx();
+
+	for(let i = 0; i<stars.length;i++) {
+
+		drawstar(stars[i]);
+	}
 	//draw particles
 	for(let i=0; i<particles.length; i++) {
 		let p:Particle = particles[i];

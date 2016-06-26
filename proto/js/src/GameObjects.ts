@@ -138,3 +138,11 @@ export class Player extends MovingObject implements GameObject {
 		this.Velocity.y += v.y;
 	}
 }
+
+
+export class star{
+	Position:Vector2;
+	constructor() {
+		this.Position = new Vector2(Math.random()*WORLD_SIZE,Math.random()*WORLD_SIZE);
+	} 
+}

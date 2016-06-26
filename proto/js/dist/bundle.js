@@ -56,6 +56,7 @@
 	var particles = [];
 	var player;
 	var allow_shoot = true;
+	var stars = [];
 	window.addEventListener("load", function () {
 	    canvas = document.getElementById("display");
 	    /*canvas.width = window.innerWidth;
@@ -65,6 +66,9 @@
 	    //add 10 asteroids
 	    for (var i = 0; i < 10; i++) {
 	        objects.push(new GameObjects_1.Asteroid(new Assets_1.Vector2(30, 20)));
+	    }
+	    for (var i = 0; i < 20; i++) {
+	        stars.push(new GameObjects_1.star());
 	    }
 	    player = new GameObjects_1.Player();
 	    objects.push(player);
@@ -86,10 +90,19 @@
 	    ctx.drawImage(o.Texture, -o.Texture.width * 0.5, -o.Texture.width * 0.5);
 	    ctx.restore();
 	}
+	function drawstar(s) {
+	    var canvasPos = toCanvasCoordinates(s.Position);
+	    ctx.fillStyle = "#FFF";
+	    ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
+	    ctx.fillRect(canvasPos.x + 1, canvasPos.y, 1, 3);
+	}
 	function mainloop() {
 	    window.requestAnimationFrame(mainloop);
 	    var td = 1 / 60; //time diff
 	    clearctx();
+	    for (var i = 0; i < stars.length; i++) {
+	        drawstar(stars[i]);
+	    }
 	    //draw particles
 	    for (var i = 0; i < particles.length; i++) {
 	        var p = particles[i];
@@ -136,7 +149,7 @@
 	"use strict";
 	exports.WORLD_SIZE = 400;
 	exports.ASTEROID_SPEED = 50;
-	exports.BULLET_SPEED = 100;
+	exports.BULLET_SPEED = 2500;
 	exports.PLAYER_ACCELERATION = 200;
 	exports.PLAYER_ROTATION_SPEED = 4;
 
@@ -339,6 +352,13 @@
 	    return Player;
 	}(MovingObject));
 	exports.Player = Player;
+	var star = (function () {
+	    function star() {
+	        this.Position = new Assets_1.Vector2(Math.random() * config_1.WORLD_SIZE * 2, Math.random() * config_1.WORLD_SIZE * 2);
+	    }
+	    return star;
+	}());
+	exports.star = star;
 
 
 /***/ },
