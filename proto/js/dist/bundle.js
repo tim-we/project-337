@@ -54,6 +54,7 @@
 	img.src = "./tex/asteroid1.png";
 	var objects = [];
 	var particles = [];
+	var ai = [];
 	var player;
 	var allow_shoot = true;
 	var stars = [];
@@ -63,13 +64,18 @@
 	    canvas.height = window.innerHeight;*/
 	    canvas.width = canvas.height = 2 * config_1.WORLD_SIZE;
 	    ctx = canvas.getContext("2d");
+	    //add background stars
+	    for (var i = 0; i < 20; i++) {
+	        stars.push(new GameObjects_1.Star());
+	    }
 	    //add 10 asteroids
 	    for (var i = 0; i < 10; i++) {
-	        objects.push(new GameObjects_1.Asteroid(new Assets_1.Vector2(30, 20)));
+	        objects.push(new GameObjects_1.Asteroid());
 	    }
-	    for (var i = 0; i < 20; i++) {
-	        stars.push(new GameObjects_1.star());
-	    }
+	    //add ai enemies
+	    var a = new GameObjects_1.Alien();
+	    objects.push(a);
+	    ai.push(a);
 	    player = new GameObjects_1.Player();
 	    objects.push(player);
 	    mainloop();
@@ -145,6 +151,15 @@
 	    else {
 	        allow_shoot = true;
 	    }
+	    var tmp = [player];
+	    for (var i = 0; i < ai.length; i++) {
+	        var _ai = ai[i];
+	        _ai.see(tmp);
+	        var sp = _ai.shootMaybe();
+	        if (sp != null) {
+	            particles.push(sp);
+	        }
+	    }
 	}
 
 
@@ -159,12 +174,13 @@
 	exports.PLAYER_ACCELERATION = 200;
 	exports.PLAYER_ROTATION_SPEED = 4;
 	exports.PLAYER_MAX_SPEED2 = Math.pow(1000, 2);
-	exports.BULLET_LIFETIME = 4.2 * 1000;
+	exports.BULLET_LIFETIME = 5 * 1000;
+	exports.AI_FIRE_COOLDOWN = 420;
 
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Vector2 = (function () {
@@ -193,6 +209,13 @@
 	    return Vector2;
 	}());
 	exports.Vector2 = Vector2;
+	var config_1 = __webpack_require__(1);
+	function getRandomWorldPos() {
+	    var x = (Math.random() * 2) - 1;
+	    var y = (Math.random() * 2) - 1;
+	    return new Vector2(x * config_1.WORLD_SIZE, y * config_1.WORLD_SIZE);
+	}
+	exports.getRandomWorldPos = getRandomWorldPos;
 
 
 /***/ },
@@ -285,6 +308,7 @@
 	var Asteroid = (function (_super) {
 	    __extends(Asteroid, _super);
 	    function Asteroid(pos) {
+	        if (pos === void 0) { pos = Assets_2.getRandomWorldPos(); }
 	        _super.call(this);
 	        this.Position = pos;
 	        //random direction
@@ -367,13 +391,68 @@
 	    return Player;
 	}(MovingObject));
 	exports.Player = Player;
-	var star = (function () {
-	    function star() {
+	var Assets_2 = __webpack_require__(2);
+	var Alien = (function (_super) {
+	    __extends(Alien, _super);
+	    function Alien() {
+	        _super.call(this);
+	        this.Rotation = 0;
+	        this._enemies = [];
+	        this._lastShot = 0;
+	        this.Texture = tex.UFO;
+	        this.Position = Assets_2.getRandomWorldPos();
+	        this.Velocity = new Assets_1.Vector2(30, 15);
+	        this.DirectionVector = new Assets_1.Vector2();
+	    }
+	    Alien.prototype.shoot = function () {
+	        var p = Assets_1.Vector2.add(this.Position, this.DirectionVector.scale(20));
+	        var v = Assets_1.Vector2.add(this.Velocity, this.DirectionVector.scale(config_1.BULLET_SPEED));
+	        this._lastShot = Date.now();
+	        return new ShootingParticle(p, v);
+	    };
+	    Alien.prototype.see = function (p, a) {
+	        if (p === void 0) { p = []; }
+	        if (a === void 0) { a = []; }
+	        this._enemies = p;
+	    };
+	    Alien.prototype.turnTowards = function (p) {
+	        var v = Assets_1.Vector2.add(this.Position, p.scale(-1));
+	        if (v.x == 0 && v.y == 0) {
+	            return;
+	        }
+	        this.DirectionVector = v.scale(-1 / Math.sqrt(v.len2));
+	    };
+	    Alien.prototype.shootMaybe = function () {
+	        if ((Date.now() - this._lastShot) < config_1.AI_FIRE_COOLDOWN) {
+	            return;
+	        }
+	        var min_d2 = Math.pow(500, 2);
+	        var enemy = null;
+	        for (var i = 0; i < this._enemies.length; i++) {
+	            var e = this._enemies[i];
+	            var tmp = e.distance2To(this.Position);
+	            if (tmp < min_d2) {
+	                min_d2 = tmp;
+	                enemy = e;
+	            }
+	        }
+	        if (enemy != null) {
+	            this.turnTowards(enemy.Position);
+	            return this.shoot();
+	        }
+	        return;
+	    };
+	    Alien.prototype.accelerate = function (t) { };
+	    return Alien;
+	}(MovingObject));
+	exports.Alien = Alien;
+	var Star = (function () {
+	    function Star() {
 	        this.Position = new Assets_1.Vector2(Math.random() * config_1.WORLD_SIZE, Math.random() * config_1.WORLD_SIZE);
 	    }
-	    return star;
+	    return Star;
 	}());
-	exports.star = star;
+	exports.Star = Star;
 
 
 /***/ },
@@ -382,12 +461,14 @@
 
 	"use strict";
 	exports.ASTEROIDS = [
-	    newTexture("./tex/asteroid1.png"),
-	    newTexture("./tex/asteroid2.png"),
-	    newTexture("./tex/asteroid3.png")
+	    createTexture("./tex/asteroid1.png"),
+	    createTexture("./tex/asteroid2.png"),
+	    createTexture("./tex/asteroid3.png"),
+	    createTexture("./tex/asteroid4.png")
 	];
-	exports.PLAYER = newTexture("./tex/player.png");
-	function newTexture(path) {
+	exports.PLAYER = createTexture("./tex/player.png");
+	exports.UFO = createTexture("./tex/ufo.png");
+	function createTexture(path) {
 	    var tex = new Image();
 	    tex.src = path;
 	    return tex;

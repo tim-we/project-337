@@ -1,4 +1,4 @@
-import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED, PLAYER_ACCELERATION, PLAYER_MAX_SPEED2, BULLET_LIFETIME} from "./config";
+import {WORLD_SIZE, ASTEROID_SPEED, BULLET_SPEED, PLAYER_ACCELERATION, PLAYER_MAX_SPEED2, BULLET_LIFETIME, AI_FIRE_COOLDOWN} from "./config";
 import {Vector2} from "./Assets";
 import * as tex from "./Textures";
 
@@ -10,6 +10,15 @@ export interface GameObject {
 	move(t:number):void;
 
 	distance2To(point:Vector2):number;
+}
+
+export interface Controllable {
+	Position:Vector2;
+	DirectionVector:Vector2;
+
+	accelerate(t:number):void;
+
+	shoot():ShootingParticle;
 }
 
 export interface Particle {
@@ -59,7 +68,7 @@ export class Asteroid extends MovingObject implements GameObject {
 
 	public Texture:HTMLImageElement;
 
-	constructor(pos:Vector2) {
+	constructor(pos:Vector2 = getRandomWorldPos()) {
 		super();
 
 		this.Position = pos;
@@ -99,7 +108,7 @@ export class ShootingParticle extends MovingObject implements Particle {
 
 }
 
-export class Player extends MovingObject implements GameObject {
+export class Player extends MovingObject implements GameObject, Controllable {
 
 	Texture:HTMLImageElement;
 
@@ -150,8 +159,86 @@ export class Player extends MovingObject implements GameObject {
 	}
 }
 
+import {getRandomWorldPos} from "./Assets";
 
-export class star{
+export class Alien extends MovingObject implements GameObject, Controllable {
+
+	DirectionVector:Vector2;
+
+	private _enemies:GameObject[];
+
+	private _lastShot:number;
+
+	public Rotation:number = 0;
+
+	public Texture:HTMLImageElement;
+
+	constructor() {
+		super();
+
+		this._enemies = [];
+
+		this._lastShot = 0;
+
+		this.Texture = tex.UFO;
+
+		this.Position = getRandomWorldPos();
+		this.Velocity = new Vector2(30,15);
+		this.DirectionVector = new Vector2();
+	}
+
+	public shoot():ShootingParticle {
+		let p:Vector2 = Vector2.add(this.Position, this.DirectionVector.scale(20));
+		let v:Vector2 = Vector2.add(this.Velocity, this.DirectionVector.scale(BULLET_SPEED));
+
+		this._lastShot = Date.now();
+
+		return new ShootingParticle(p, v);
+	}
+
+	public see(p:Player[] = [], a:Asteroid[] = []) {
+		this._enemies = p;
+	}
+
+	public turnTowards(p:Vector2):void {
+		let v:Vector2 = Vector2.add(this.Position, p.scale(-1));
+
+		if(v.x == 0 && v.y == 0) { return; }
+
+		this.DirectionVector = v.scale(-1/Math.sqrt(v.len2));
+	}
+
+	public shootMaybe():ShootingParticle {
+		if((Date.now() - this._lastShot) < AI_FIRE_COOLDOWN) { return; }
+
+		let min_d2:number = 500 ** 2;
+		let enemy:GameObject = null;
+
+		for(let i=0; i<this._enemies.length; i++) {
+			let e = this._enemies[i];
+
+			let tmp:number = e.distance2To(this.Position);
+
+			if(tmp < min_d2) {
+				min_d2 = tmp;
+				enemy = e;
+			}
+		}
+
+		if(enemy != null) {
+
+			this.turnTowards(enemy.Position);
+
+			return this.shoot();
+		}
+
+		return;
+	}
+
+	public accelerate(t:number) {}
+}
+
+export class Star{
 	Position:Vector2;
 	constructor() {
 		this.Position = new Vector2(

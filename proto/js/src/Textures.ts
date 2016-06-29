@@ -1,12 +1,15 @@
 export var ASTEROIDS:HTMLImageElement[] = [
-		newTexture("./tex/asteroid1.png"),
-		newTexture("./tex/asteroid2.png"),
-		newTexture("./tex/asteroid3.png")
+		createTexture("./tex/asteroid1.png"),
+		createTexture("./tex/asteroid2.png"),
+		createTexture("./tex/asteroid3.png"),
+		createTexture("./tex/asteroid4.png")
 	];
 
-export var PLAYER:HTMLImageElement = newTexture("./tex/player.png");
+export var PLAYER:HTMLImageElement = createTexture("./tex/player.png");
 
-function newTexture(path:string):HTMLImageElement {
+export var UFO:HTMLImageElement = createTexture("./tex/ufo.png");
+
+function createTexture(path:string):HTMLImageElement {
 	let tex:HTMLImageElement = new Image();
 
 	tex.src = path;

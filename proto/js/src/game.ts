@@ -1,7 +1,7 @@
 import {WORLD_SIZE, PLAYER_ROTATION_SPEED} from "./config";
 import {Vector2} from "./Assets";
 import * as UserInput from "./UserInput";
-import {GameObject, Particle, Asteroid, Player, star} from "./GameObjects";
+import {GameObject, Controllable, Particle, Asteroid, Player, Alien, Star} from "./GameObjects";
 
 var canvas:HTMLCanvasElement,
 	ctx:CanvasRenderingContext2D;
@@ -11,9 +11,10 @@ img.src = "./tex/asteroid1.png";
 
 var objects:GameObject[] = [];
 var particles:Particle[] = [];
+var ai:Controllable[] = [];
 var player:Player;
 var allow_shoot:boolean = true;
-var stars:star[] = [];
+var stars:Star[] = [];
 
 window.addEventListener("load", function(){	
 	canvas = <HTMLCanvasElement>document.getElementById("display");
@@ -25,14 +26,20 @@ window.addEventListener("load", function(){
 
 	ctx = canvas.getContext("2d");
 
-	//add 10 asteroids
-	for(let i=0; i<10; i++) {
-		objects.push(new Asteroid(new Vector2(30,20)));
+	//add background stars
+	for(let i=0; i<20; i++) {
+		stars.push(new Star());
 	}
 
-	for(let i=0; i<20; i++) {
-		stars.push(new star());
+	//add 10 asteroids
+	for(let i=0; i<10; i++) {
+		objects.push(new Asteroid());
 	}
+
+	//add ai enemies
+	let a = new Alien();
+	objects.push(a);
+	ai.push(a);
 
 	player = new Player();
 	objects.push(player);
@@ -64,7 +71,7 @@ function drawGameObject(o:GameObject) {
     ctx.restore();
 }
 
-function drawstar(s:star) {
+function drawstar(s:Star) {
 	let canvasPos = toCanvasCoordinates(s.Position);
 	ctx.fillStyle = "#FFF";
 	ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
@@ -128,6 +135,16 @@ function mainloop():void {
 		}		
 	} else {
 		allow_shoot = true;
+	}
+
+	let tmp = [player];
+
+	for(let i=0; i<ai.length; i++) {
+		let _ai = <Alien>ai[i];
+		_ai.see(tmp);
+		let sp:Particle = _ai.shootMaybe();
+
+		if(sp != null) {particles.push(sp); }
 	}
 
 }

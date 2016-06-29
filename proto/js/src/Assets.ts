@@ -26,3 +26,11 @@ export class Vector2 {
 		);
 	}
 }
+
+import {WORLD_SIZE} from "./config";
+
+export function getRandomWorldPos() {
+	let x = (Math.random() * 2) - 1;
+	let y = (Math.random() * 2) - 1;
+	return new Vector2(x * WORLD_SIZE, y * WORLD_SIZE);
+}
