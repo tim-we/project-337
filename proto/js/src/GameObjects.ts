@@ -246,10 +246,14 @@ export class Alien extends MovingObject implements GameObject, Controllable {
 
 export class Star{
 	Position:Vector2;
+	Brightness:number;
 	constructor() {
 		this.Position = new Vector2(
 				(-1+Math.random()*2) * WORLD_SIZE,
 				(-1+Math.random()*2) * WORLD_SIZE
 			);
+		this.Brightness = Math.round(Math.random()*255);
+			
+		
 	} 
 }

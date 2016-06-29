@@ -98,8 +98,9 @@
 	}
 	function drawstar(s) {
 	    var canvasPos = toCanvasCoordinates(s.Position);
-	    ctx.fillStyle = "#FFF";
-	    ctx.fillRect(canvasPos.x, canvasPos.y, 1, 1);
+	    ctx.fillStyle = "rgb(" + s.Brightness + "," + s.Brightness + "," + s.Brightness + ")";
+	    ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
+	    ctx.fillRect(canvasPos.x + 1, canvasPos.y - 1, 1, 3);
 	}
 	function drawParticle(p) {
 	    var cp = toCanvasCoordinates(p.Position);
@@ -461,6 +462,7 @@
 	var Star = (function () {
 	    function Star() {
 	        this.Position = new Assets_1.Vector2((-1 + Math.random() * 2) * config_1.WORLD_SIZE, (-1 + Math.random() * 2) * config_1.WORLD_SIZE);
+	        this.Brightness = Math.round(Math.random() * 255);
 	    }
 	    return Star;
 	}());

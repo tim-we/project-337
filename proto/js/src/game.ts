@@ -72,9 +72,12 @@ function drawGameObject(o:GameObject) {
 }
 
 function drawstar(s:Star) {
+	
 	let canvasPos = toCanvasCoordinates(s.Position);
-	ctx.fillStyle = "#FFF";
-	ctx.fillRect(canvasPos.x, canvasPos.y, 1, 1);
+	
+	ctx.fillStyle = "rgb("+s.Brightness+","+s.Brightness+","+s.Brightness+")";
+	ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
+	ctx.fillRect(canvasPos.x+1, canvasPos.y-1, 1, 3);
 	
 
 }
