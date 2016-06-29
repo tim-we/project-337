@@ -1,4 +1,4 @@
-import {WORLD_SIZE, PLAYER_ROTATION_SPEED} from "./config";
+import {WORLD_SIZE, PLAYER_ROTATION_SPEED, STARS_NUMBER} from "./config";
 import {Vector2} from "./Assets";
 import * as UserInput from "./UserInput";
 import {GameObject, Controllable, Particle, Asteroid, Player, Alien, Star} from "./GameObjects";
@@ -27,7 +27,7 @@ window.addEventListener("load", function(){
 	ctx = canvas.getContext("2d");
 
 	//add background stars
-	for(let i=0; i<200; i++) {
+	for(let i=0; i<STARS_NUMBER; i++) {
 		stars.push(new Star());
 	}
 
