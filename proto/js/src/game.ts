@@ -79,6 +79,13 @@ function drawstar(s:Star) {
 
 }
 
+function drawParticle(p:Particle) {
+	let cp:Vector2 = toCanvasCoordinates(p.Position);
+
+	ctx.fillStyle = p.color;
+	ctx.fillRect(cp.x,cp.y,2,2);
+}
+
 function mainloop():void {
 	window.requestAnimationFrame(mainloop);
 
@@ -101,10 +108,7 @@ function mainloop():void {
 			continue;
 		}
 
-		let cp:Vector2 = toCanvasCoordinates(p.Position);
-
-		ctx.fillStyle = "#fff";
-		ctx.fillRect(cp.x,cp.y,2,2);
+		drawParticle(p);
 
 		p.move(td);
 	}

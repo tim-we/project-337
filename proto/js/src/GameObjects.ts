@@ -27,6 +27,8 @@ export interface Particle {
 
 	isAlive:boolean;
 
+	color:string;
+
 	move(t:number):void;
 
 	distance2To(point:Vector2):number;
@@ -88,7 +90,7 @@ export class Asteroid extends MovingObject implements GameObject {
 
 export class ShootingParticle extends MovingObject implements Particle {
 
-	public Texture:HTMLImageElement;
+	public color:string = "#fff";
 
 	private alive:boolean;
 	private birth:number;
@@ -106,6 +108,10 @@ export class ShootingParticle extends MovingObject implements Particle {
 	get isAlive() { return this.alive && (Date.now()-this.birth)<BULLET_LIFETIME; }
 	get Rotation() { return this._alpha; }
 
+}
+
+export class LaserShootingParticle extends ShootingParticle {
+	public color:string = "#00ff00";
 }
 
 export class Player extends MovingObject implements GameObject, Controllable {
@@ -193,7 +199,7 @@ export class Alien extends MovingObject implements GameObject, Controllable {
 
 		this._lastShot = Date.now();
 
-		return new ShootingParticle(p, v);
+		return new LaserShootingParticle(p, v);
 	}
 
 	public see(p:Player[] = [], a:Asteroid[] = []) {
