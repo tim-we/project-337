@@ -106,6 +106,8 @@ export class ShootingParticle extends MovingObject implements Particle {
 	}
 
 	get isAlive() { return this.alive && (Date.now()-this.birth)<BULLET_LIFETIME; }
+	set isAlive(a:boolean) { this.alive = a; }
+	
 	get Rotation() { return this._alpha; }
 
 }

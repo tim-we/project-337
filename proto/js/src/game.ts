@@ -6,9 +6,6 @@ import {GameObject, Controllable, Particle, Asteroid, Player, Alien, Star} from 
 var canvas:HTMLCanvasElement,
 	ctx:CanvasRenderingContext2D;
 
-var img:HTMLImageElement = new Image();
-img.src = "./tex/asteroid1.png";
-
 var objects:GameObject[] = [];
 var particles:Particle[] = [];
 var ai:Controllable[] = [];
@@ -154,4 +151,14 @@ function mainloop():void {
 		if(sp != null) {particles.push(sp); }
 	}
 
+	//particle collision
+	for(let i = 0; i<particles.length; i++) {   
+		let p = particles[i];
+		
+		for(let k=0; k<objects.length; k++) {
+			if(p.distance2To(objects[k].Position)< 400) {
+				p.isAlive = false;
+			}
+		}
+	}
 }
