@@ -101,6 +101,11 @@
 	    ctx.fillStyle = "#FFF";
 	    ctx.fillRect(canvasPos.x, canvasPos.y, 1, 1);
 	}
+	function drawParticle(p) {
+	    var cp = toCanvasCoordinates(p.Position);
+	    ctx.fillStyle = p.color;
+	    ctx.fillRect(cp.x, cp.y, 2, 2);
+	}
 	function mainloop() {
 	    window.requestAnimationFrame(mainloop);
 	    var td = 1 / 60; //time diff
@@ -117,9 +122,7 @@
 	            i--;
 	            continue;
 	        }
-	        var cp = toCanvasCoordinates(p.Position);
-	        ctx.fillStyle = "#fff";
-	        ctx.fillRect(cp.x, cp.y, 2, 2);
+	        drawParticle(p);
 	        p.move(td);
 	    }
 	    //draw gameobjects (includes player)
@@ -329,6 +332,7 @@
 	    __extends(ShootingParticle, _super);
 	    function ShootingParticle(pos, vel) {
 	        _super.call(this);
+	        this.color = "#fff";
 	        this.alive = true;
 	        this.birth = Date.now();
 	        this.Position = pos;
@@ -347,6 +351,15 @@
 	    return ShootingParticle;
 	}(MovingObject));
 	exports.ShootingParticle = ShootingParticle;
+	var LaserShootingParticle = (function (_super) {
+	    __extends(LaserShootingParticle, _super);
+	    function LaserShootingParticle() {
+	        _super.apply(this, arguments);
+	        this.color = "#00ff00";
+	    }
+	    return LaserShootingParticle;
+	}(ShootingParticle));
+	exports.LaserShootingParticle = LaserShootingParticle;
 	var Player = (function (_super) {
 	    __extends(Player, _super);
 	    function Player() {
@@ -407,7 +420,7 @@
 	        var p = Assets_1.Vector2.add(this.Position, this.DirectionVector.scale(20));
 	        var v = Assets_1.Vector2.add(this.Velocity, this.DirectionVector.scale(config_1.BULLET_SPEED));
 	        this._lastShot = Date.now();
-	        return new ShootingParticle(p, v);
+	        return new LaserShootingParticle(p, v);
 	    };
 	    Alien.prototype.see = function (p, a) {
 	        if (p === void 0) { p = []; }
