@@ -252,7 +252,7 @@ export class Star{
 				(-1+Math.random()*2) * WORLD_SIZE,
 				(-1+Math.random()*2) * WORLD_SIZE
 			);
-		this.Brightness = Math.round((Math.random()**7)*255);
+		this.Brightness = Math.round((Math.random()**7)*170);
 			
 		
 	} 
