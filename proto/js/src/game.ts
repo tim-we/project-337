@@ -27,7 +27,7 @@ window.addEventListener("load", function(){
 	ctx = canvas.getContext("2d");
 
 	//add background stars
-	for(let i=0; i<20; i++) {
+	for(let i=0; i<200; i++) {
 		stars.push(new Star());
 	}
 
@@ -74,8 +74,8 @@ function drawGameObject(o:GameObject) {
 function drawstar(s:Star) {
 	let canvasPos = toCanvasCoordinates(s.Position);
 	ctx.fillStyle = "#FFF";
-	ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
-	ctx.fillRect(canvasPos.x+1, canvasPos.y, 1, 3);
+	ctx.fillRect(canvasPos.x, canvasPos.y, 1, 1);
+	
 
 }
 

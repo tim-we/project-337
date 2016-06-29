@@ -65,7 +65,7 @@
 	    canvas.width = canvas.height = 2 * config_1.WORLD_SIZE;
 	    ctx = canvas.getContext("2d");
 	    //add background stars
-	    for (var i = 0; i < 20; i++) {
+	    for (var i = 0; i < 200; i++) {
 	        stars.push(new GameObjects_1.Star());
 	    }
 	    //add 10 asteroids
@@ -99,8 +99,7 @@
 	function drawstar(s) {
 	    var canvasPos = toCanvasCoordinates(s.Position);
 	    ctx.fillStyle = "#FFF";
-	    ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
-	    ctx.fillRect(canvasPos.x + 1, canvasPos.y, 1, 3);
+	    ctx.fillRect(canvasPos.x, canvasPos.y, 1, 1);
 	}
 	function mainloop() {
 	    window.requestAnimationFrame(mainloop);
@@ -448,7 +447,7 @@
 	exports.Alien = Alien;
 	var Star = (function () {
 	    function Star() {
-	        this.Position = new Assets_1.Vector2(Math.random() * config_1.WORLD_SIZE, Math.random() * config_1.WORLD_SIZE);
+	        this.Position = new Assets_1.Vector2(-(Math.random() * config_1.WORLD_SIZE) + (Math.random() * config_1.WORLD_SIZE), -(Math.random() * config_1.WORLD_SIZE) + (Math.random() * config_1.WORLD_SIZE));
 	    }
 	    return Star;
 	}());
