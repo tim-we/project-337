@@ -460,7 +460,7 @@
 	exports.Alien = Alien;
 	var Star = (function () {
 	    function Star() {
-	        this.Position = new Assets_1.Vector2(-(Math.random() * config_1.WORLD_SIZE) + (Math.random() * config_1.WORLD_SIZE), -(Math.random() * config_1.WORLD_SIZE) + (Math.random() * config_1.WORLD_SIZE));
+	        this.Position = new Assets_1.Vector2((-1 + Math.random() * 2) * config_1.WORLD_SIZE, (-1 + Math.random() * 2) * config_1.WORLD_SIZE);
 	    }
 	    return Star;
 	}());

@@ -248,8 +248,8 @@ export class Star{
 	Position:Vector2;
 	constructor() {
 		this.Position = new Vector2(
-				-(Math.random() * WORLD_SIZE)+(Math.random() * WORLD_SIZE),
-				-(Math.random() * WORLD_SIZE)+(Math.random() * WORLD_SIZE)
+				(-1+Math.random()*2) * WORLD_SIZE,
+				(-1+Math.random()*2) * WORLD_SIZE
 			);
 	} 
 }
