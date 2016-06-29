@@ -107,7 +107,7 @@ export class ShootingParticle extends MovingObject implements Particle {
 
 	get isAlive() { return this.alive && (Date.now()-this.birth)<BULLET_LIFETIME; }
 	set isAlive(a:boolean) { this.alive = a; }
-	
+
 	get Rotation() { return this._alpha; }
 
 }
@@ -147,7 +147,7 @@ export class Player extends MovingObject implements GameObject, Controllable {
 	set Health(h:number) { this._health = Math.max(0,h); }
 
 	public shoot():ShootingParticle {
-		let p:Vector2 = Vector2.add(this.Position, this.DirectionVector.scale(20));
+		let p:Vector2 = Vector2.add(this.Position, this.DirectionVector.scale(25));
 		let v:Vector2 = Vector2.add(this.Velocity, this.DirectionVector.scale(BULLET_SPEED));
 		return new ShootingParticle(p, v);
 	}
@@ -196,7 +196,7 @@ export class Alien extends MovingObject implements GameObject, Controllable {
 	}
 
 	public shoot():ShootingParticle {
-		let p:Vector2 = Vector2.add(this.Position, this.DirectionVector.scale(20));
+		let p:Vector2 = Vector2.add(this.Position, this.DirectionVector.scale(25));
 		let v:Vector2 = Vector2.add(this.Velocity, this.DirectionVector.scale(BULLET_SPEED));
 
 		this._lastShot = Date.now();
