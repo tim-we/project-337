@@ -79,11 +79,30 @@ function drawstar(s:Star) {
 
 }
 
+import {LaserShootingParticle} from "./GameObjects";
+
 function drawParticle(p:Particle) {
 	let cp:Vector2 = toCanvasCoordinates(p.Position);
 
-	ctx.fillStyle = p.color;
-	ctx.fillRect(cp.x,cp.y,2,2);
+	if(p instanceof LaserShootingParticle) {
+		let cp2:Vector2 = toCanvasCoordinates(Vector2.add(p.Position, p.Velocity.scale(-0.15)));
+
+		ctx.strokeStyle = p.color;
+		ctx.lineWidth = 2;
+
+		ctx.beginPath();
+		ctx.moveTo(cp.x, cp.y);
+		ctx.lineTo(cp2.x, cp2.y);
+
+		ctx.stroke();
+
+		
+	} else {
+		ctx.fillStyle = p.color;
+
+		ctx.fillRect(cp.x,cp.y,2,2);
+	}
+	
 }
 
 function mainloop():void {
