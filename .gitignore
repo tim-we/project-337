@@ -48,5 +48,7 @@ proto/js/dist
 proto/js/dist/bundle.js
 proto/js/dist/bundle.js.map
 proto
-dist
+dist/server/node_modules
+dist/**/*.js
+dist/**/*.js.map
 

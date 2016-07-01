@@ -1,0 +1,10 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "description": "asteroids multiplayer server",
+  "main": "server.js",
+  "author": "timw",
+  "dependencies": {
+    "socket.io": "^1.4.8"
+  }
+}
