@@ -1,4 +1,5 @@
 import {Vector, Orientation} from "../Basics";
+import { Projectile, Bullet } from "./Projectiles";
 
 export abstract class PhysicalObject {
 
@@ -12,6 +13,9 @@ export abstract class PhysicalObject {
 		this.Orientation = new Orientation(a);
 	}
 
+	public move(f:number) {
+		this.Position = Vector.add(this.Position, this.Velocity.scaled(f));
+	}
 }
 
 export abstract class DestructableObject extends PhysicalObject {
@@ -21,15 +25,28 @@ export abstract class DestructableObject extends PhysicalObject {
 
 }
 
+import { PLAYER_ACCELERATION } from "../Config";
+
 export abstract class ControllableObject extends DestructableObject {
 
-	protected lastShot:number;
+	protected a:number = PLAYER_ACCELERATION;
 
-	public accelerate(a:number) {
-
+	public accelerate(a:number):void {
+		this.Velocity = Vector.add(
+				this.Velocity, 
+				this.Orientation.vector.scaled(this.a)
+			);
 	}
 
-	public shoot() {
+	protected allowShoot():boolean {
+		return true;
+	}
 
+	public shoot():Projectile {
+		if(this.allowShoot()) {
+			return new Bullet(this.Position, this.Velocity.scaled(0.5));
+		} else {
+			return null;
+		}	
 	}
 }
