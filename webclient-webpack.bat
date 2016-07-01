@@ -1,0 +1,2 @@
+cd dist/webclient
+webpack

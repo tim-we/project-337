@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "sourceMap": true,
+		"outDir": "dist",
+        "isolatedModules": false,
+        "declaration": false
+    },
+    "exclude": [
+        "proto",
+        "server/dist",
+        "shared/dist"
+    ]
+}

@@ -50,8 +50,6 @@
 	var UserInput = __webpack_require__(3);
 	var GameObjects_1 = __webpack_require__(4);
 	var canvas, ctx;
-	var img = new Image();
-	img.src = "./tex/asteroid1.png";
 	var objects = [];
 	var particles = [];
 	var ai = [];
@@ -65,7 +63,7 @@
 	    canvas.width = canvas.height = 2 * config_1.WORLD_SIZE;
 	    ctx = canvas.getContext("2d");
 	    //add background stars
-	    for (var i = 0; i < 200; i++) {
+	    for (var i = 0; i < config_1.STARS_NUMBER; i++) {
 	        stars.push(new GameObjects_1.Star());
 	    }
 	    //add 10 asteroids
@@ -102,10 +100,22 @@
 	    ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
 	    ctx.fillRect(canvasPos.x + 1, canvasPos.y - 1, 1, 3);
 	}
+	var GameObjects_2 = __webpack_require__(4);
 	function drawParticle(p) {
 	    var cp = toCanvasCoordinates(p.Position);
-	    ctx.fillStyle = p.color;
-	    ctx.fillRect(cp.x, cp.y, 2, 2);
+	    if (p instanceof GameObjects_2.LaserShootingParticle) {
+	        var cp2 = toCanvasCoordinates(Assets_1.Vector2.add(p.Position, p.Velocity.scale(-0.15)));
+	        ctx.strokeStyle = p.color;
+	        ctx.lineWidth = 2;
+	        ctx.beginPath();
+	        ctx.moveTo(cp.x, cp.y);
+	        ctx.lineTo(cp2.x, cp2.y);
+	        ctx.stroke();
+	    }
+	    else {
+	        ctx.fillStyle = p.color;
+	        ctx.fillRect(cp.x, cp.y, 2, 2);
+	    }
 	}
 	function mainloop() {
 	    window.requestAnimationFrame(mainloop);
@@ -163,6 +173,15 @@
 	            particles.push(sp);
 	        }
 	    }
+	    //particle collision
+	    for (var i = 0; i < particles.length; i++) {
+	        var p = particles[i];
+	        for (var k = 0; k < objects.length; k++) {
+	            if (p.distance2To(objects[k].Position) < 400) {
+	                p.isAlive = false;
+	            }
+	        }
+	    }
 	}
 
 
@@ -173,12 +192,16 @@
 	"use strict";
 	exports.WORLD_SIZE = 400;
 	exports.ASTEROID_SPEED = 50;
-	exports.BULLET_SPEED = 100;
+	exports.BULLET_SPEED = 350;
 	exports.PLAYER_ACCELERATION = 200;
 	exports.PLAYER_ROTATION_SPEED = 4;
 	exports.PLAYER_MAX_SPEED2 = Math.pow(1000, 2);
-	exports.BULLET_LIFETIME = 5 * 1000;
+	exports.BULLET_LIFETIME = 10 * 1000;
 	exports.AI_FIRE_COOLDOWN = 420;
+	exports.STARS_NUMBER = 2000;
+	window.addEventListener("load", function () {
+	    exports.WORLD_SIZE = Math.min(window.innerWidth, window.innerHeight) * 0.5;
+	});
 
 
 /***/ },
@@ -341,6 +364,7 @@
 	    }
 	    Object.defineProperty(ShootingParticle.prototype, "isAlive", {
 	        get: function () { return this.alive && (Date.now() - this.birth) < config_1.BULLET_LIFETIME; },
+	        set: function (a) { this.alive = a; },
 	        enumerable: true,
 	        configurable: true
 	    });
@@ -387,7 +411,7 @@
 	        configurable: true
 	    });
 	    Player.prototype.shoot = function () {
-	        var p = Assets_1.Vector2.add(this.Position, this.DirectionVector.scale(20));
+	        var p = Assets_1.Vector2.add(this.Position, this.DirectionVector.scale(25));
 	        var v = Assets_1.Vector2.add(this.Velocity, this.DirectionVector.scale(config_1.BULLET_SPEED));
 	        return new ShootingParticle(p, v);
 	    };
@@ -418,7 +442,7 @@
 	        this.DirectionVector = new Assets_1.Vector2();
 	    }
 	    Alien.prototype.shoot = function () {
-	        var p = Assets_1.Vector2.add(this.Position, this.DirectionVector.scale(20));
+	        var p = Assets_1.Vector2.add(this.Position, this.DirectionVector.scale(25));
 	        var v = Assets_1.Vector2.add(this.Velocity, this.DirectionVector.scale(config_1.BULLET_SPEED));
 	        this._lastShot = Date.now();
 	        return new LaserShootingParticle(p, v);
@@ -462,7 +486,7 @@
 	var Star = (function () {
 	    function Star() {
 	        this.Position = new Assets_1.Vector2((-1 + Math.random() * 2) * config_1.WORLD_SIZE, (-1 + Math.random() * 2) * config_1.WORLD_SIZE);
-	        this.Brightness = Math.round(Math.random() * 255);
+	        this.Brightness = Math.round((Math.pow(Math.random(), 7)) * 170);
 	    }
 	    return Star;
 	}());
