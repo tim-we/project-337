@@ -52,12 +52,20 @@ export class Orientation {
 	public vector:Vector;
 
 	constructor(x:number = 0) {
-		this.alpha = x;
+		this.set(x);
+	}
+
+	public set(alpha:number):void {
+		this.alpha = alpha;
 
 		this.vector = new Vector(
-			Math.cos(x),
-			Math.sin(x)
+			Math.cos(alpha),
+			Math.sin(alpha)
 		);
+	}
+
+	public toString():string {
+		return Math.round(this.alpha * 180 / Math.PI) + "°";
 	}
 }
 
