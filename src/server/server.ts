@@ -2,9 +2,8 @@ import {Vector} from "../shared/Basics";
 import * as scfg from "./Server-Config";
 import * as gcfg from "../shared/Config";
 
-console.log("Hello Motherfucker, halts Maul!");
+console.log("server started.");
 
-//var http = require('http').Server(app);
 var http = require("http").createServer(function(req, res){
 	console.log("http request");
 });
@@ -19,12 +18,11 @@ io.on('connection', function(socket){
 		console.log('user disconnected');
 	});
 
-	socket.on('Position', function(data){
-		if(data instanceof Vector) {
-			console.log('we got a vector!');
-		}
-		console.log('user position: ' + JSON.stringify(data));
+	socket.on('update velocity', function(data){
+		console.log('user velocity: ' + JSON.stringify(data));
+	});
+
+	socket.on("request version", function(client_version){
+		socket.emit("server version", gcfg.VERSION);
 	});
 });
-
-//console.log("end");

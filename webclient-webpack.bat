@@ -1,2 +1,3 @@
-cd dist/webclient
+@cd dist/webclient
 webpack
+@cd ../..
