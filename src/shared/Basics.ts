@@ -64,8 +64,17 @@ export class Orientation {
 		);
 	}
 
+	public change(alpha:number):void {
+		this.alpha += alpha;
+
+		this.vector = new Vector(
+			Math.cos(this.alpha),
+			Math.sin(this.alpha)
+		);
+	}
+
 	public toString():string {
-		return Math.round(this.alpha * 180 / Math.PI) + "°";
+		return (Math.round(this.alpha * 180 / Math.PI) % 360) + "°";
 	}
 }
 

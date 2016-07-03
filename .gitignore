@@ -51,4 +51,4 @@ proto
 dist/server/node_modules
 dist/**/*.js
 dist/**/*.js.map
-
+!**/webpack.config.js

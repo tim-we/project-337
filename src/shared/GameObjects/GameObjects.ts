@@ -1,5 +1,6 @@
 import {Vector, Orientation} from "../Basics";
-import { Projectile, Bullet } from "./Projectiles";
+//circular dependency, http://stackoverflow.com/questions/35240716/webpack-import-returns-undefined-depending-on-the-order-of-imports
+//import { Projectile, Bullet } from "./Projectiles";
 
 export abstract class PhysicalObject {
 
@@ -42,11 +43,11 @@ export abstract class ControllableObject extends DestructableObject {
 		return true;
 	}
 
-	public shoot():Projectile {
+	/*public shoot():Projectile {
 		if(this.allowShoot()) {
 			return new Bullet(this.Position, this.Velocity.scaled(0.5));
 		} else {
 			return null;
 		}	
-	}
+	}*/
 }
