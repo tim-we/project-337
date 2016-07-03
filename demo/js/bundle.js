@@ -201,8 +201,7 @@
 	    Players.map(function (p) {
 	        drawPlayer(p);
 	    });
-	    document.body.style.backgroundPositionX = 0 + "px";
-	    document.body.style.backgroundPositionY = 0 + "px";
+	    document.body.style.backgroundPosition = (-CameraPosition.x * 0.2) + "px " + (CameraPosition.y * 0.2) + "px";
 	    frames++;
 	    _endHook(delta);
 	}
