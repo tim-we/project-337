@@ -4,6 +4,7 @@ import { AbstractPlayer } from "../shared/GameObjects/GameObjects";
 import { Player } from "./GameObjects/Player";
 import { Asteroid } from "../shared/GameObjects/Asteroid";
 import * as Textures from "./Textures";
+import {WORLD_SIZE} from "../shared/Config";
 
 type RenderCallback = (number) => void;
 
@@ -22,7 +23,10 @@ var badframe:boolean;
 //game data
 var Players:AbstractPlayer[] = [];
 var Asteroids:Asteroid[] = [];
+var Stars:Star[] = [];
 var CameraPosition:Vector;
+
+
 
 //helper
 var offsetX:number;
@@ -64,6 +68,22 @@ export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Aste
 		render();
 }
 
+class Star{
+	Position:Vector;
+	Brightness:number;
+	constructor() {
+		this.Position = new Vector(
+				(-1+Math.random()*2) * window.innerWidth,
+				(-1+Math.random()*2) * window.innerHeight
+			);
+		this.Brightness = Math.round((Math.random()**3)*170);
+			
+		
+	} 
+}
+
+	
+
 export function stop() {
 	_stop = true;
 }
@@ -96,6 +116,11 @@ function toCanvas(v:Vector):Vector {
 		);
 }
 
+//the big bang 
+	for(let i=0; i<5000; i++) {
+		Stars.push(new Star());
+	}
+
 function render() {
 	if(!_stop) { window.requestAnimationFrame(render); }
 
@@ -104,6 +129,10 @@ function render() {
 	if(delta > frameTimeLimit) { badframe = true; delta = frameTimeLimit; }
 
 	clear();
+
+	for(let i=0; i<Stars.length; i++) {
+		drawstar(Stars[i]);
+	}
 
 	for(let i=0; i<Asteroids.length; i++) {
 		drawAsteroid(Asteroids[i]);
@@ -123,6 +152,17 @@ export function clear() {
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
+function drawstar(s:Star) {
+	
+	let canvasPos = s.Position;
+	
+	ctx.fillStyle = "rgb("+s.Brightness+","+s.Brightness+","+s.Brightness+")";
+	ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
+	ctx.fillRect(canvasPos.x+1, canvasPos.y-1, 1, 3);
+	
+
+}
+
 /**
  * draws texture at given position with given angle
  * pos is the center point
@@ -140,6 +180,11 @@ function drawTextureAt(tex:HTMLImageElement, pos:Vector, alpha:number) {
 
     ctx.restore();
 }
+
+
+
+
+
 
 function drawAsteroid(a:Asteroid) {
 	let pos = toCanvas(a.Position);
