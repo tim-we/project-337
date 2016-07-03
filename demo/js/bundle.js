@@ -109,6 +109,12 @@
 	var Textures = __webpack_require__(6);
 	var canvas = document.createElement("canvas");
 	var ctx = canvas.getContext("2d");
+	var fpsDisplay = document.createElement("div");
+	fpsDisplay.setAttribute("style", "position:fixed;top:0px;right:0px;font-size:12px;");
+	var frameTimeLimit = 25 / 1000;
+	var frames;
+	var fps;
+	var badframe;
 	var Players = [];
 	var Asteroids = [];
 	var CameraPosition;
@@ -126,6 +132,16 @@
 	    parent.appendChild(canvas);
 	    updateSize();
 	    canvas.setAttribute("style", "background-color: #000;");
+	    parent.appendChild(fpsDisplay);
+	    fps = frames = 0;
+	    badframe = false;
+	    window.setInterval(function () {
+	        fps = frames;
+	        fpsDisplay.innerHTML = "FPS: " + fps;
+	        fpsDisplay.style.color = badframe ? "#f00" : "#0f0";
+	        frames = 0;
+	        badframe = false;
+	    }, 1000);
 	    _stop = false;
 	    lastFrame = Date.now();
 	    render();
@@ -159,6 +175,10 @@
 	    }
 	    var delta = (Date.now() - lastFrame) * 0.001;
 	    lastFrame = Date.now();
+	    if (delta > frameTimeLimit) {
+	        badframe = true;
+	        delta = frameTimeLimit;
+	    }
 	    clear();
 	    for (var i = 0; i < Asteroids.length; i++) {
 	        drawAsteroid(Asteroids[i]);
@@ -166,6 +186,7 @@
 	    for (var i = 0; i < Players.length; i++) {
 	        drawPlayer(Players[i]);
 	    }
+	    frames++;
 	    _endHook(delta);
 	}
 	function clear() {
@@ -504,3 +525,4 @@
 
 /***/ }
 /******/ ]);
+//# sourceMappingURL=bundle.js.map

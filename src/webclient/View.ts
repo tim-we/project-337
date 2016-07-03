@@ -8,8 +8,16 @@ import * as Textures from "./Textures";
 type RenderCallback = (number) => void;
 
 //canvas
-var canvas = document.createElement("canvas");
+var canvas:HTMLCanvasElement = document.createElement("canvas");
 var ctx:CanvasRenderingContext2D = canvas.getContext("2d");
+
+//fps-counter
+var fpsDisplay:HTMLDivElement = document.createElement("div");
+fpsDisplay.setAttribute("style","position:fixed;top:0px;right:0px;font-size:12px;");
+const frameTimeLimit:number = 25/1000;
+var frames:number;
+var fps:number;
+var badframe:boolean;
 
 //game data
 var Players:AbstractPlayer[] = [];
@@ -24,6 +32,7 @@ var _stop:boolean = false;
 var _endHook:RenderCallback = function() {};
 var lastFrame:number;
 
+
 export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Asteroid[]) {
 
 	//link data arrays
@@ -37,6 +46,18 @@ export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Aste
 		updateSize();
 		canvas.setAttribute("style","background-color: #000;");
 	
+	//set up frame counter
+		parent.appendChild(fpsDisplay);
+		fps = frames = 0;
+		badframe = false;
+		window.setInterval(function(){
+			fps = frames;
+			fpsDisplay.innerHTML = "FPS: " + fps;
+			fpsDisplay.style.color = badframe ? "#f00" : "#0f0";
+			frames = 0;
+			badframe = false;
+		}, 1000);
+
 	//start render loop
 		_stop = false;
 		lastFrame = Date.now();
@@ -80,6 +101,7 @@ function render() {
 
 	let delta:number = (Date.now() - lastFrame) * 0.001; // time diff in seconds
 	lastFrame = Date.now();
+	if(delta > frameTimeLimit) { badframe = true; delta = frameTimeLimit; }
 
 	clear();
 
@@ -91,6 +113,8 @@ function render() {
 		drawPlayer(Players[i]);
 	}
 	
+	frames++;
+
 	_endHook(delta);
 }
 
