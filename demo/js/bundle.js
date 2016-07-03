@@ -47,28 +47,34 @@
 	"use strict";
 	var View = __webpack_require__(1);
 	var cfg = __webpack_require__(2);
-	var ccfg = __webpack_require__(5);
-	var Player_1 = __webpack_require__(6);
+	var ccfg = __webpack_require__(7);
+	var Player_1 = __webpack_require__(4);
 	var Asteroid_1 = __webpack_require__(8);
 	var Basics_1 = __webpack_require__(3);
 	var UserInput = __webpack_require__(9);
+	var DEBUG = true;
 	var Players = [];
 	var Asteroids = [];
 	var CameraPosition = new Basics_1.Vector(0, 0);
-	var me = new Player_1.Player("Bob");
+	var me = new Player_1.Player("Me");
 	Players.push(me);
 	window.addEventListener("load", function () {
-	    alert("debug info in console [Ctrl+Shift+J]");
+	    if (DEBUG) {
+	        alert("debug info in console [Ctrl+Shift+J]");
+	    }
 	    View.init(document.body, CameraPosition, Players, Asteroids);
 	    View.setDrawEndHook(update);
-	    window.setInterval(function () {
-	        console.log("p: " + me.Position + " a: " + me.Orientation);
-	    }, 2000);
+	    if (DEBUG) {
+	        window.setInterval(function () {
+	            console.log("p: " + me.Position + " a: " + me.Orientation);
+	        }, 2000);
+	    }
 	    for (var i = 0; i < 10; i++) {
 	        var o = new Basics_1.Orientation(Math.random() * Math.PI * 2);
 	        var v = o.vector.scaled(100);
 	        Asteroids.push(new Asteroid_1.Asteroid(v));
 	    }
+	    Players.push(new Player_1.OtherPlayer("that other guy"));
 	});
 	function update(delta) {
 	    Players.map(function (p) { p.move(delta); });
@@ -99,7 +105,8 @@
 	"use strict";
 	var Config_1 = __webpack_require__(2);
 	var Basics_1 = __webpack_require__(3);
-	var Textures = __webpack_require__(4);
+	var Player_1 = __webpack_require__(4);
+	var Textures = __webpack_require__(6);
 	var canvas = document.createElement("canvas");
 	var ctx = canvas.getContext("2d");
 	var Players = [];
@@ -181,11 +188,11 @@
 	function drawPlayer(p) {
 	    var pos = toCanvas(p.Position);
 	    drawTextureAt(Textures.PLAYER, pos, p.Orientation.alpha);
-	    if (true) {
+	    if (!(p instanceof Player_1.Player)) {
 	        ctx.textAlign = "center";
-	        ctx.strokeStyle = "#fff";
+	        ctx.fillStyle = "rgba(255,255,255,0.42)";
 	        ctx.font = "16px sans-serif";
-	        ctx.fillText(p.Name, pos.x, pos.y);
+	        ctx.fillText(p.Name, pos.x, pos.y - 25);
 	    }
 	}
 	//# sourceMappingURL=View.js.map
@@ -259,6 +266,9 @@
 	        this.alpha += alpha;
 	        this.vector = new Vector(Math.cos(this.alpha), Math.sin(this.alpha));
 	    };
+	    Orientation.prototype.setRandom = function () {
+	        this.set(Math.random() * 2 * Math.PI);
+	    };
 	    Orientation.prototype.toString = function () {
 	        return (Math.round(this.alpha * 180 / Math.PI) % 360) + "°";
 	    };
@@ -300,35 +310,6 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
-
-	"use strict";
-	var dir = "./img/";
-	exports.ASTEROIDS = [
-	    createTexture("asteroid1.png"),
-	    createTexture("asteroid2.png"),
-	    createTexture("asteroid3.png"),
-	    createTexture("asteroid4.png")
-	];
-	exports.PLAYER = createTexture("player.png");
-	exports.UFO = createTexture("ufo.png");
-	function createTexture(path) {
-	    var tex = new Image();
-	    tex.src = dir + path;
-	    return tex;
-	}
-	//# sourceMappingURL=Textures.js.map
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	"use strict";
-	exports.CAMERA_SMOOTHNESS = 0.75;
-	//# sourceMappingURL=Client-Config.js.map
-
-/***/ },
-/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -337,7 +318,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GameObjects_1 = __webpack_require__(7);
+	var GameObjects_1 = __webpack_require__(5);
 	var Config_1 = __webpack_require__(2);
 	var Player = (function (_super) {
 	    __extends(Player, _super);
@@ -357,10 +338,18 @@
 	    return Player;
 	}(GameObjects_1.AbstractPlayer));
 	exports.Player = Player;
+	var OtherPlayer = (function (_super) {
+	    __extends(OtherPlayer, _super);
+	    function OtherPlayer(name) {
+	        _super.call(this, name);
+	    }
+	    return OtherPlayer;
+	}(GameObjects_1.AbstractPlayer));
+	exports.OtherPlayer = OtherPlayer;
 	//# sourceMappingURL=Player.js.map
 
 /***/ },
-/* 7 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -416,6 +405,35 @@
 	//# sourceMappingURL=GameObjects.js.map
 
 /***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var dir = "./img/";
+	exports.ASTEROIDS = [
+	    createTexture("asteroid1.png"),
+	    createTexture("asteroid2.png"),
+	    createTexture("asteroid3.png"),
+	    createTexture("asteroid4.png")
+	];
+	exports.PLAYER = createTexture("player.png");
+	exports.UFO = createTexture("ufo.png");
+	function createTexture(path) {
+	    var tex = new Image();
+	    tex.src = dir + path;
+	    return tex;
+	}
+	//# sourceMappingURL=Textures.js.map
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+	exports.CAMERA_SMOOTHNESS = 0.75;
+	//# sourceMappingURL=Client-Config.js.map
+
+/***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -425,7 +443,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GameObjects_1 = __webpack_require__(7);
+	var GameObjects_1 = __webpack_require__(5);
 	var Basics_1 = __webpack_require__(3);
 	var Config_1 = __webpack_require__(2);
 	var Asteroid = (function (_super) {
@@ -436,6 +454,8 @@
 	        this.Type = 0;
 	        this.Position = p;
 	        this.Type = Math.floor(Math.random() * Config_1.NUM_ASTEROIDS);
+	        this.Orientation.setRandom();
+	        this.Velocity = this.Orientation.vector.scaled(Math.random() * 20);
 	    }
 	    return Asteroid;
 	}(GameObjects_1.DestructableObject));
@@ -484,4 +504,3 @@
 
 /***/ }
 /******/ ]);
-//# sourceMappingURL=bundle.js.map
