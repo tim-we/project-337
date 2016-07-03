@@ -1,6 +1,7 @@
 import { VIEW_RADIUS } from "../shared/Config";
 import { Vector, Orientation } from "../shared/Basics";
-import { Player } from "../shared/GameObjects/Player";
+import { AbstractPlayer } from "../shared/GameObjects/GameObjects";
+import { Player } from "./GameObjects/Player";
 import { Asteroid } from "../shared/GameObjects/Asteroid";
 import * as Textures from "./Textures";
 
@@ -11,7 +12,7 @@ var canvas = document.createElement("canvas");
 var ctx:CanvasRenderingContext2D = canvas.getContext("2d");
 
 //game data
-var Players:Player[] = [];
+var Players:AbstractPlayer[] = [];
 var Asteroids:Asteroid[] = [];
 var CameraPosition:Vector;
 
@@ -23,7 +24,7 @@ var _stop:boolean = false;
 var _endHook:RenderCallback = function() {};
 var lastFrame:number;
 
-export function init(parent:HTMLElement, _c:Vector, _p:Player[], _a:Asteroid[]) {
+export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Asteroid[]) {
 
 	//link data arrays
 		Players = _p;
@@ -123,8 +124,17 @@ function drawAsteroid(a:Asteroid) {
 	drawTextureAt(tex, pos, a.Orientation.alpha);
 }
 
-function drawPlayer(p:Player) {
+function drawPlayer(p:AbstractPlayer) {
 	let pos = toCanvas(p.Position);
 
 	drawTextureAt(Textures.PLAYER, pos, p.Orientation.alpha);
+
+	if(!(p instanceof Player)) {
+		ctx.textAlign = "center";
+
+		ctx.fillStyle = "rgba(255,255,255,0.42)";
+		ctx.font = "16px sans-serif";
+
+		ctx.fillText(p.Name, pos.x, pos.y - 25);
+	}
 }

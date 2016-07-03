@@ -11,6 +11,9 @@ export class Asteroid extends DestructableObject {
 
 		this.Position = p;
 		this.Type = Math.floor(Math.random() * NUM_ASTEROIDS);
+		this.Orientation.setRandom();
+
+		this.Velocity = this.Orientation.vector.scaled(Math.random() * 20);
 	}
 
 }

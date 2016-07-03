@@ -73,6 +73,10 @@ export class Orientation {
 		);
 	}
 
+	public setRandom():void {
+		this.set(Math.random() * 2 * Math.PI);
+	}
+
 	public toString():string {
 		return (Math.round(this.alpha * 180 / Math.PI) % 360) + "°";
 	}

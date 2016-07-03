@@ -24,30 +24,34 @@ export abstract class DestructableObject extends PhysicalObject {
 	public Health:number = 100;
 	public Radius:number = 42;
 
+	public isAlive():boolean {
+		return this.Health > 0;
+	}
+
 }
 
-import { PLAYER_ACCELERATION } from "../Config";
+import { PLAYER_SHOOT_COOLDOWN } from "../Config";
 
-export abstract class ControllableObject extends DestructableObject {
+export abstract class AbstractPlayer extends DestructableObject {
 
-	protected a:number = PLAYER_ACCELERATION;
+	public Name:string;
 
-	public accelerate(a:number):void {
-		this.Velocity = Vector.add(
-				this.Velocity, 
-				this.Orientation.vector.scaled(this.a)
-			);
+	public Level:number;
+
+	private _lastShot:number;
+
+	private _cooldown:number = PLAYER_SHOOT_COOLDOWN;
+
+	private _xp:number = 0;
+
+	constructor(name:string) {
+		super();
+
+		this.Name = name;
 	}
 
-	protected allowShoot():boolean {
-		return true;
+	public allowShoot():boolean {
+		return (Date.now() - this._lastShot) > this._cooldown;
 	}
 
-	/*public shoot():Projectile {
-		if(this.allowShoot()) {
-			return new Bullet(this.Position, this.Velocity.scaled(0.5));
-		} else {
-			return null;
-		}	
-	}*/
 }

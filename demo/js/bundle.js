@@ -181,6 +181,12 @@
 	function drawPlayer(p) {
 	    var pos = toCanvas(p.Position);
 	    drawTextureAt(Textures.PLAYER, pos, p.Orientation.alpha);
+	    if (true) {
+	        ctx.textAlign = "center";
+	        ctx.strokeStyle = "#fff";
+	        ctx.font = "16px sans-serif";
+	        ctx.fillText(p.Name, pos.x, pos.y);
+	    }
 	}
 	//# sourceMappingURL=View.js.map
 
@@ -193,6 +199,7 @@
 	exports.WORLD_SIZE = 8000;
 	exports.SERVER_PORT = 8080;
 	exports.PLAYER_ACCELERATION = 200;
+	exports.PLAYER_SHOOT_COOLDOWN = 16;
 	exports.PLAYER_ROTATION_SPEED = 4;
 	exports.VIEW_RADIUS = 500;
 	exports.NUM_ASTEROIDS = 4;
@@ -335,16 +342,20 @@
 	var Player = (function (_super) {
 	    __extends(Player, _super);
 	    function Player(name) {
-	        _super.call(this);
-	        this.Name = name;
+	        _super.call(this, name);
 	    }
 	    Player.prototype.accelerate = function (f) {
 	        f = f * Config_1.PLAYER_ACCELERATION;
 	        this.Velocity.x += this.Orientation.vector.x * f;
 	        this.Velocity.y += this.Orientation.vector.y * f;
 	    };
+	    Player.prototype.shoot = function () {
+	        if (!this.allowShoot()) {
+	            return;
+	        }
+	    };
 	    return Player;
-	}(GameObjects_1.DestructableObject));
+	}(GameObjects_1.AbstractPlayer));
 	exports.Player = Player;
 	//# sourceMappingURL=Player.js.map
 
@@ -381,25 +392,27 @@
 	        this.Health = 100;
 	        this.Radius = 42;
 	    }
+	    DestructableObject.prototype.isAlive = function () {
+	        return this.Health > 0;
+	    };
 	    return DestructableObject;
 	}(PhysicalObject));
 	exports.DestructableObject = DestructableObject;
 	var Config_1 = __webpack_require__(2);
-	var ControllableObject = (function (_super) {
-	    __extends(ControllableObject, _super);
-	    function ControllableObject() {
-	        _super.apply(this, arguments);
-	        this.a = Config_1.PLAYER_ACCELERATION;
+	var AbstractPlayer = (function (_super) {
+	    __extends(AbstractPlayer, _super);
+	    function AbstractPlayer(name) {
+	        _super.call(this);
+	        this._cooldown = Config_1.PLAYER_SHOOT_COOLDOWN;
+	        this._xp = 0;
+	        this.Name = name;
 	    }
-	    ControllableObject.prototype.accelerate = function (a) {
-	        this.Velocity = Basics_1.Vector.add(this.Velocity, this.Orientation.vector.scaled(this.a));
+	    AbstractPlayer.prototype.allowShoot = function () {
+	        return (Date.now() - this._lastShot) > this._cooldown;
 	    };
-	    ControllableObject.prototype.allowShoot = function () {
-	        return true;
-	    };
-	    return ControllableObject;
+	    return AbstractPlayer;
 	}(DestructableObject));
-	exports.ControllableObject = ControllableObject;
+	exports.AbstractPlayer = AbstractPlayer;
 	//# sourceMappingURL=GameObjects.js.map
 
 /***/ },

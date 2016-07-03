@@ -1,28 +1,33 @@
 import * as View from "./View";
 import * as cfg from "../shared/Config";
 import * as ccfg from "./Client-Config";
-import { Player } from "../shared/GameObjects/Player";
+import { Player, OtherPlayer } from "./GameObjects/Player";
+import { AbstractPlayer } from "../shared/GameObjects/GameObjects";
 import { Asteroid } from "../shared/GameObjects/Asteroid";
 import { Vector, Orientation } from "../shared/Basics";
 import * as UserInput from "./UserInput";
 
-var Players:Player[] = [];
+const DEBUG:boolean = true;
+
+var Players:AbstractPlayer[] = [];
 var Asteroids:Asteroid[] = [];
 var CameraPosition:Vector = new Vector(0,0);
 
-var me:Player = new Player("Bob");
+var me:Player = new Player("Me");
 Players.push(me);
 
 window.addEventListener("load", function(){
-	alert("debug info in console [Ctrl+Shift+J]");
+	if(DEBUG) { alert("debug info in console [Ctrl+Shift+J]"); }
 
 	View.init(document.body, CameraPosition, Players, Asteroids);
 
 	View.setDrawEndHook(update);
 
-	window.setInterval(function(){
-		console.log("p: " + me.Position + " a: " + me.Orientation);
-	}, 2000);
+	if(DEBUG) {
+		window.setInterval(function(){
+			console.log("p: " + me.Position + " a: " + me.Orientation);
+		}, 2000);
+	}
 
 	//add some asteroids
 	for(let i=0; i<10; i++) {
@@ -31,6 +36,9 @@ window.addEventListener("load", function(){
 
 		Asteroids.push(new Asteroid(v));
 	}
+
+	//add other player
+	Players.push(new OtherPlayer("that other guy"));
 });
 
 function update(delta:number) {
