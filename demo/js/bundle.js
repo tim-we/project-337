@@ -47,12 +47,11 @@
 	"use strict";
 	var View = __webpack_require__(1);
 	var cfg = __webpack_require__(2);
-	var ccfg = __webpack_require__(7);
 	var Player_1 = __webpack_require__(4);
-	var Asteroid_1 = __webpack_require__(8);
+	var Asteroid_1 = __webpack_require__(7);
 	var Basics_1 = __webpack_require__(3);
-	var UserInput = __webpack_require__(9);
-	var DEBUG = true;
+	var UserInput = __webpack_require__(8);
+	var DEBUG = false;
 	var Players = [];
 	var Asteroids = [];
 	var CameraPosition = new Basics_1.Vector(0, 0);
@@ -79,9 +78,8 @@
 	function update(delta) {
 	    Players.map(function (p) { p.move(delta); });
 	    Asteroids.map(function (a) { a.move(delta); });
-	    var f = 1 - ccfg.CAMERA_SMOOTHNESS;
-	    CameraPosition.x = f * CameraPosition.x + ccfg.CAMERA_SMOOTHNESS * me.Position.x;
-	    CameraPosition.y = f * CameraPosition.y + ccfg.CAMERA_SMOOTHNESS * me.Position.y;
+	    CameraPosition.x = me.Position.x;
+	    CameraPosition.y = me.Position.y;
 	    var dir = 0;
 	    if (UserInput.isPressed("left")) {
 	        dir += 1;
@@ -124,6 +122,23 @@
 	var _stop = false;
 	var _endHook = function () { };
 	var lastFrame;
+	var BGSIZE = 512;
+	function initBackground() {
+	    var bg = document.createElement("canvas");
+	    bg.width = bg.height = BGSIZE;
+	    var context = bg.getContext("2d");
+	    context.fillStyle = "#000";
+	    context.fillRect(0, 0, bg.width, bg.height);
+	    for (var i = 0; i < 5000; i++) {
+	        var brightness = Math.floor(Math.pow(Math.random(), 3) * 170);
+	        var x = (-1 + Math.random() * 2) * BGSIZE;
+	        var y = (-1 + Math.random() * 2) * BGSIZE;
+	        context.fillStyle = "rgb(" + brightness + "," + brightness + "," + brightness + ")";
+	        context.fillRect(x, y, 3, 1);
+	        context.fillRect(x + 1, y - 1, 1, 3);
+	    }
+	    document.body.style.backgroundImage = "url(" + bg.toDataURL() + ")";
+	}
 	function init(parent, _c, _p, _a) {
 	    Players = _p;
 	    Asteroids = _a;
@@ -131,7 +146,6 @@
 	    parent.innerHTML = "";
 	    parent.appendChild(canvas);
 	    updateSize();
-	    canvas.setAttribute("style", "background-color: #000;");
 	    parent.appendChild(fpsDisplay);
 	    fps = frames = 0;
 	    badframe = false;
@@ -145,6 +159,7 @@
 	    _stop = false;
 	    lastFrame = Date.now();
 	    render();
+	    initBackground();
 	}
 	exports.init = init;
 	function stop() {
@@ -180,18 +195,19 @@
 	        delta = frameTimeLimit;
 	    }
 	    clear();
-	    for (var i = 0; i < Asteroids.length; i++) {
-	        drawAsteroid(Asteroids[i]);
-	    }
-	    for (var i = 0; i < Players.length; i++) {
-	        drawPlayer(Players[i]);
-	    }
+	    Asteroids.map(function (a) {
+	        drawAsteroid(a);
+	    });
+	    Players.map(function (p) {
+	        drawPlayer(p);
+	    });
+	    document.body.style.backgroundPositionX = 0 + "px";
+	    document.body.style.backgroundPositionY = 0 + "px";
 	    frames++;
 	    _endHook(delta);
 	}
 	function clear() {
-	    ctx.fillStyle = "#000";
-	    ctx.fillRect(0, 0, canvas.width, canvas.height);
+	    ctx.clearRect(0, 0, canvas.width, canvas.height);
 	}
 	exports.clear = clear;
 	function drawTextureAt(tex, pos, alpha) {
@@ -448,14 +464,6 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports) {
-
-	"use strict";
-	exports.CAMERA_SMOOTHNESS = 0.75;
-	//# sourceMappingURL=Client-Config.js.map
-
-/***/ },
-/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -484,7 +492,7 @@
 	//# sourceMappingURL=Asteroid.js.map
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";

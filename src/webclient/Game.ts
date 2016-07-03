@@ -7,7 +7,7 @@ import { Asteroid } from "../shared/GameObjects/Asteroid";
 import { Vector, Orientation } from "../shared/Basics";
 import * as UserInput from "./UserInput";
 
-const DEBUG:boolean = true;
+const DEBUG:boolean = false;
 
 var Players:AbstractPlayer[] = [];
 var Asteroids:Asteroid[] = [];
@@ -47,9 +47,8 @@ function update(delta:number) {
 		Asteroids.map(function(a:Asteroid) { a.move(delta);	});
 
 	//update camera position
-		let f = 1 - ccfg.CAMERA_SMOOTHNESS;
-		CameraPosition.x = f * CameraPosition.x + ccfg.CAMERA_SMOOTHNESS * me.Position.x;
-		CameraPosition.y = f * CameraPosition.y + ccfg.CAMERA_SMOOTHNESS * me.Position.y;
+		CameraPosition.x = me.Position.x;
+		CameraPosition.y = me.Position.y;
 
 	//handle user input
 	let dir = 0;

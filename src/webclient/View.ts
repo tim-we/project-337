@@ -23,10 +23,7 @@ var badframe:boolean;
 //game data
 var Players:AbstractPlayer[] = [];
 var Asteroids:Asteroid[] = [];
-var Stars:Star[] = [];
 var CameraPosition:Vector;
-
-
 
 //helper
 var offsetX:number;
@@ -36,6 +33,30 @@ var _stop:boolean = false;
 var _endHook:RenderCallback = function() {};
 var lastFrame:number;
 
+const BGSIZE:number = 512;
+
+function initBackground() {
+	let bg:HTMLCanvasElement = document.createElement("canvas");
+	bg.width = bg.height = BGSIZE;
+	let context:CanvasRenderingContext2D = bg.getContext("2d");
+
+	context.fillStyle = "#000";
+	context.fillRect(0, 0, bg.width, bg.height);
+
+	//big bang
+	for(let i=0; i<5000; i++) {
+		let brightness = Math.floor(Math.random()**3 * 170);
+		let x = (-1+Math.random()*2) * BGSIZE;
+		let y = (-1+Math.random()*2) * BGSIZE;
+
+		//draw star 
+		context.fillStyle = "rgb("+brightness+","+brightness+","+brightness+")";
+		context.fillRect(x, y, 3, 1);
+		context.fillRect(x+1, y-1, 1, 3);
+	}
+
+	document.body.style.backgroundImage = "url("+bg.toDataURL()+")";
+}
 
 export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Asteroid[]) {
 
@@ -48,7 +69,7 @@ export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Aste
 		parent.innerHTML = "";
 		parent.appendChild(canvas);
 		updateSize();
-		canvas.setAttribute("style","background-color: #000;");
+		//canvas.setAttribute("style","background-color: #000;");
 	
 	//set up frame counter
 		parent.appendChild(fpsDisplay);
@@ -66,23 +87,9 @@ export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Aste
 		_stop = false;
 		lastFrame = Date.now();
 		render();
-}
 
-class Star{
-	Position:Vector;
-	Brightness:number;
-	constructor() {
-		this.Position = new Vector(
-				(-1+Math.random()*2) * window.innerWidth,
-				(-1+Math.random()*2) * window.innerHeight
-			);
-		this.Brightness = Math.round((Math.random()**3)*170);
-			
-		
-	} 
+	initBackground();
 }
-
-	
 
 export function stop() {
 	_stop = true;
@@ -116,11 +123,6 @@ function toCanvas(v:Vector):Vector {
 		);
 }
 
-//the big bang 
-	for(let i=0; i<5000; i++) {
-		Stars.push(new Star());
-	}
-
 function render() {
 	if(!_stop) { window.requestAnimationFrame(render); }
 
@@ -130,37 +132,26 @@ function render() {
 
 	clear();
 
-	for(let i=0; i<Stars.length; i++) {
-		drawstar(Stars[i]);
-	}
+	Asteroids.map(function(a:Asteroid){
+		drawAsteroid(a);
+	});
 
-	for(let i=0; i<Asteroids.length; i++) {
-		drawAsteroid(Asteroids[i]);
-	}
+	Players.map(function(p:AbstractPlayer){
+		drawPlayer(p);
+	});
 
-	for(let i=0; i<Players.length; i++) {
-		drawPlayer(Players[i]);
-	}
-	
+	document.body.style.backgroundPositionX = 0 + "px";
+	document.body.style.backgroundPositionY = 0 + "px";
+
 	frames++;
 
 	_endHook(delta);
 }
 
 export function clear() {
-	ctx.fillStyle = "#000";
-	ctx.fillRect(0,0,canvas.width,canvas.height);
-}
-
-function drawstar(s:Star) {
-	
-	let canvasPos = s.Position;
-	
-	ctx.fillStyle = "rgb("+s.Brightness+","+s.Brightness+","+s.Brightness+")";
-	ctx.fillRect(canvasPos.x, canvasPos.y, 3, 1);
-	ctx.fillRect(canvasPos.x+1, canvasPos.y-1, 1, 3);
-	
-
+	/*ctx.fillStyle = "#000";
+	ctx.fillRect(0,0,canvas.width,canvas.height);*/
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 /**
@@ -180,11 +171,6 @@ function drawTextureAt(tex:HTMLImageElement, pos:Vector, alpha:number) {
 
     ctx.restore();
 }
-
-
-
-
-
 
 function drawAsteroid(a:Asteroid) {
 	let pos = toCanvas(a.Position);
