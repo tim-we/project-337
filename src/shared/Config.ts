@@ -4,7 +4,7 @@ export const WORLD_SIZE = 8000;
 
 export const SERVER_PORT = 8080;
 
-export const PLAYER_ACCELERATION = 200;
+export const PLAYER_ACCELERATION = 250;
 
 export const PLAYER_SHOOT_COOLDOWN = 16;
 

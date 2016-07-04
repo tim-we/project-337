@@ -63,6 +63,7 @@
 	    }
 	    View.init(document.body, CameraPosition, Players, Asteroids);
 	    View.setDrawEndHook(update);
+	    UserInput.enableMobile();
 	    if (DEBUG) {
 	        window.setInterval(function () {
 	            console.log("p: " + me.Position + " a: " + me.Orientation);
@@ -80,13 +81,7 @@
 	    Asteroids.map(function (a) { a.move(delta); });
 	    CameraPosition.x = me.Position.x;
 	    CameraPosition.y = me.Position.y;
-	    var dir = 0;
-	    if (UserInput.isPressed("left")) {
-	        dir += 1;
-	    }
-	    if (UserInput.isPressed("right")) {
-	        dir -= 1;
-	    }
+	    var dir = -UserInput.getAxisX();
 	    if (dir != 0) {
 	        me.Orientation.change(dir * cfg.PLAYER_ROTATION_SPEED * delta);
 	    }
@@ -129,11 +124,16 @@
 	    var context = bg.getContext("2d");
 	    context.fillStyle = "#000";
 	    context.fillRect(0, 0, bg.width, bg.height);
-	    for (var i = 0; i < 5000; i++) {
-	        var brightness = Math.floor(Math.pow(Math.random(), 3) * 170);
+	    for (var i = 0; i < 1500; i++) {
+	        var b = Math.floor(Math.pow(Math.random(), 3) * 160);
 	        var x = (-1 + Math.random() * 2) * BGSIZE;
 	        var y = (-1 + Math.random() * 2) * BGSIZE;
-	        context.fillStyle = "rgb(" + brightness + "," + brightness + "," + brightness + ")";
+	        if (b > 145) {
+	            context.fillStyle = "rgb(70,70,70)";
+	            context.fillRect(x - 1, y, 5, 1);
+	            context.fillRect(x + 1, y - 2, 1, 5);
+	        }
+	        context.fillStyle = "rgb(" + b + "," + b + "," + b + ")";
 	        context.fillRect(x, y, 3, 1);
 	        context.fillRect(x + 1, y - 1, 1, 3);
 	    }
@@ -201,7 +201,6 @@
 	    Players.map(function (p) {
 	        drawPlayer(p);
 	    });
-	    document.body.style.backgroundPosition = (-CameraPosition.x * 0.2) + "px " + (CameraPosition.y * 0.2) + "px";
 	    frames++;
 	    _endHook(delta);
 	}
@@ -241,7 +240,7 @@
 	exports.VERSION = 0.1;
 	exports.WORLD_SIZE = 8000;
 	exports.SERVER_PORT = 8080;
-	exports.PLAYER_ACCELERATION = 200;
+	exports.PLAYER_ACCELERATION = 250;
 	exports.PLAYER_SHOOT_COOLDOWN = 16;
 	exports.PLAYER_ROTATION_SPEED = 4;
 	exports.VIEW_RADIUS = 500;
@@ -496,13 +495,39 @@
 
 	"use strict";
 	var keys_pressed = [];
+	var xAxis = 0;
+	var yAxis = 0;
 	window.addEventListener("keydown", function (e) {
 	    keys_pressed.push(e.keyCode || 32);
+	    if (e.keyCode == mappings["left"]) {
+	        xAxis = Math.max(-1, xAxis - 1);
+	    }
+	    if (e.keyCode == mappings["right"]) {
+	        xAxis = Math.min(xAxis + 1, 1);
+	    }
+	    if (e.keyCode == mappings["down"]) {
+	        yAxis = Math.max(-1, xAxis - 1);
+	    }
+	    if (e.keyCode == mappings["up"]) {
+	        yAxis = Math.min(xAxis + 1, 1);
+	    }
 	});
 	window.addEventListener("keyup", function (e) {
 	    var i;
 	    while ((i = keys_pressed.indexOf(e.keyCode)) > -1) {
 	        keys_pressed.splice(i, 1);
+	    }
+	    if (e.keyCode == mappings["left"]) {
+	        xAxis = Math.min(xAxis + 1, 1);
+	    }
+	    if (e.keyCode == mappings["right"]) {
+	        xAxis = Math.max(-1, xAxis - 1);
+	    }
+	    if (e.keyCode == mappings["up"]) {
+	        yAxis = Math.max(-1, xAxis - 1);
+	    }
+	    if (e.keyCode == mappings["down"]) {
+	        yAxis = Math.min(xAxis + 1, 1);
 	    }
 	});
 	var mappings = {
@@ -528,6 +553,33 @@
 	    }
 	}
 	exports.isPressed = isPressed;
+	function enableMobile(touch) {
+	    if (touch === void 0) { touch = document.body; }
+	    touch.addEventListener("touchstart", function () {
+	        keys_pressed.push(mappings["up"]);
+	    });
+	    touch.addEventListener("touchend", function () {
+	        var i;
+	        while ((i = keys_pressed.indexOf(mappings["up"])) > -1) {
+	            keys_pressed.splice(i, 1);
+	        }
+	    });
+	    window.addEventListener('deviceorientation', function (e) {
+	        try {
+	            xAxis = Math.max(-45, Math.min(e.beta, 45)) / 45;
+	        }
+	        catch (e) { }
+	    });
+	}
+	exports.enableMobile = enableMobile;
+	function getAxisX() {
+	    return xAxis;
+	}
+	exports.getAxisX = getAxisX;
+	function getAxisY() {
+	    return yAxis;
+	}
+	exports.getAxisY = getAxisY;
 	//# sourceMappingURL=UserInput.js.map
 
 /***/ }

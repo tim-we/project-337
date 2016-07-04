@@ -1,7 +1,16 @@
 var keys_pressed:number[] = [];
 
+var xAxis:number = 0;
+var yAxis:number = 0;
+
 window.addEventListener("keydown", function(e) {
 	keys_pressed.push(e.keyCode || 32);
+
+	if(e.keyCode == mappings["left"]) { xAxis = Math.max(-1, xAxis-1); }
+	if(e.keyCode == mappings["right"]) { xAxis = Math.min(xAxis+1, 1); }
+
+	if(e.keyCode == mappings["down"]) { yAxis = Math.max(-1, xAxis-1); }
+	if(e.keyCode == mappings["up"]) { yAxis = Math.min(xAxis+1, 1); }
 });
 window.addEventListener("keyup", function(e) {
 	let i:number;
@@ -9,6 +18,12 @@ window.addEventListener("keyup", function(e) {
 	while((i = keys_pressed.indexOf(e.keyCode)) > -1) {
 		keys_pressed.splice(i, 1);
 	}
+
+	if(e.keyCode == mappings["left"]) { xAxis = Math.min(xAxis+1, 1); }
+	if(e.keyCode == mappings["right"]) { xAxis = Math.max(-1, xAxis-1); }
+
+	if(e.keyCode == mappings["up"]) { yAxis = Math.max(-1, xAxis-1); }
+	if(e.keyCode == mappings["down"]) { yAxis = Math.min(xAxis+1, 1); }
 });
 
 //http://stackoverflow.com/questions/6199038/javascript-event-triggered-by-pressing-space
@@ -34,4 +49,38 @@ export function isPressed(id:string):boolean {
 	} else {
 		throw new Error("Key mapping not supported.");
 	}
+}
+
+interface IDeviceMotionEvent extends DeviceMotionEvent {
+	beta:number;
+	gamma:number;
+	alpha:number;
+}
+
+export function enableMobile(touch:HTMLElement = document.body):void {
+	touch.addEventListener("touchstart", function(){
+		keys_pressed.push(mappings["up"]);
+	});
+
+	touch.addEventListener("touchend", function(){
+		let i:number;
+
+		while((i = keys_pressed.indexOf(mappings["up"])) > -1) {
+			keys_pressed.splice(i, 1);
+		}
+	});
+
+	window.addEventListener('deviceorientation', function(e:IDeviceMotionEvent){
+		try {
+			xAxis = Math.max(-45, Math.min(e.beta, 45)) / 45;
+		} catch(e) {}
+	});
+}
+
+export function getAxisX():number {
+	return xAxis;
+}
+
+export function getAxisY():number {
+	return yAxis;
 }

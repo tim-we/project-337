@@ -44,13 +44,22 @@ function initBackground() {
 	context.fillRect(0, 0, bg.width, bg.height);
 
 	//big bang
-	for(let i=0; i<5000; i++) {
-		let brightness = Math.floor(Math.random()**3 * 170);
+	for(let i=0; i<1500; i++) {
+		let b = Math.floor(Math.random()**3 * 160); //brightness
 		let x = (-1+Math.random()*2) * BGSIZE;
 		let y = (-1+Math.random()*2) * BGSIZE;
 
 		//draw star 
-		context.fillStyle = "rgb("+brightness+","+brightness+","+brightness+")";
+		
+
+		if(b > 145) {
+			context.fillStyle = "rgb(70,70,70)";
+			context.fillRect(x-1, y, 5, 1);
+			context.fillRect(x+1, y-2, 1, 5);
+		}
+
+		context.fillStyle = "rgb("+b+","+b+","+b+")";
+
 		context.fillRect(x, y, 3, 1);
 		context.fillRect(x+1, y-1, 1, 3);
 	}
@@ -140,7 +149,7 @@ function render() {
 		drawPlayer(p);
 	});
 
-	document.body.style.backgroundPosition = (-CameraPosition.x * 0.2) + "px " + (CameraPosition.y * 0.2) + "px";
+	//document.body.style.backgroundPosition = (-CameraPosition.x * 0.2) + "px " + (CameraPosition.y * 0.2) + "px";
 
 	frames++;
 

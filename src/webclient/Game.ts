@@ -23,6 +23,8 @@ window.addEventListener("load", function(){
 
 	View.setDrawEndHook(update);
 
+	UserInput.enableMobile();
+
 	if(DEBUG) {
 		window.setInterval(function(){
 			console.log("p: " + me.Position + " a: " + me.Orientation);
@@ -51,9 +53,7 @@ function update(delta:number) {
 		CameraPosition.y = me.Position.y;
 
 	//handle user input
-	let dir = 0;
-		if(UserInput.isPressed("left")) { dir += 1; }
-		if(UserInput.isPressed("right")) { dir -= 1; }
+	let dir = -UserInput.getAxisX();
 	
 	if(dir != 0) {
 		me.Orientation.change(dir * cfg.PLAYER_ROTATION_SPEED * delta);
