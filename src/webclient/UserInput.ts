@@ -1,3 +1,5 @@
+export var SENSITIVITY:number = 1;
+
 var keys_pressed:number[] = [];
 
 var xAxis:number = 0;
@@ -51,12 +53,6 @@ export function isPressed(id:string):boolean {
 	}
 }
 
-interface IDeviceMotionEvent extends DeviceMotionEvent {
-	beta:number;
-	gamma:number;
-	alpha:number;
-}
-
 export function enableMobile(touch:HTMLElement = document.body):void {
 	touch.addEventListener("touchstart", function(){
 		keys_pressed.push(mappings["up"]);
@@ -70,10 +66,15 @@ export function enableMobile(touch:HTMLElement = document.body):void {
 		}
 	});
 
-	window.addEventListener('deviceorientation', function(e:IDeviceMotionEvent){
+	window.addEventListener('deviceorientation', function(e:DeviceOrientationEvent){
+		let landscape:boolean = window.innerHeight < window.innerWidth;
+
 		try {
-			xAxis = Math.max(-35, Math.min(e.beta, 35)) / 20;
-		} catch(e) {}
+			landscape = window.matchMedia("(orientation: landscape)").matches;
+		} catch(e) { /* not supported by device */ }
+		
+		let a = landscape ? e.beta : e.gamma;
+		xAxis = SENSITIVITY * Math.max(-35, Math.min(a, 35)) / 15;
 	});
 }
 

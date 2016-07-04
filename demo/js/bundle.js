@@ -494,6 +494,7 @@
 /***/ function(module, exports) {
 
 	"use strict";
+	exports.SENSITIVITY = 1;
 	var keys_pressed = [];
 	var xAxis = 0;
 	var yAxis = 0;
@@ -565,10 +566,13 @@
 	        }
 	    });
 	    window.addEventListener('deviceorientation', function (e) {
+	        var landscape = window.innerHeight < window.innerWidth;
 	        try {
-	            xAxis = Math.max(-35, Math.min(e.beta, 35)) / 20;
+	            landscape = window.matchMedia("(orientation: landscape)").matches;
 	        }
 	        catch (e) { }
+	        var a = landscape ? e.beta : e.gamma;
+	        xAxis = exports.SENSITIVITY * Math.max(-35, Math.min(a, 35)) / 15;
 	    });
 	}
 	exports.enableMobile = enableMobile;
