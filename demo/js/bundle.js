@@ -494,7 +494,7 @@
 /***/ function(module, exports) {
 
 	"use strict";
-	exports.SENSITIVITY = 1;
+	exports.SENSITIVITY = 1.1;
 	var keys_pressed = [];
 	var xAxis = 0;
 	var yAxis = 0;
@@ -572,7 +572,7 @@
 	        }
 	        catch (e) { }
 	        var a = landscape ? e.beta : e.gamma;
-	        xAxis = exports.SENSITIVITY * Math.max(-35, Math.min(a, 35)) / 15;
+	        xAxis = exports.SENSITIVITY * Math.max(-35, Math.min(a, 35)) / 20;
 	    });
 	}
 	exports.enableMobile = enableMobile;

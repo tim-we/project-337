@@ -1,4 +1,4 @@
-export var SENSITIVITY:number = 1;
+export var SENSITIVITY:number = 1.1;
 
 var keys_pressed:number[] = [];
 
@@ -74,7 +74,7 @@ export function enableMobile(touch:HTMLElement = document.body):void {
 		} catch(e) { /* not supported by device */ }
 		
 		let a = landscape ? e.beta : e.gamma;
-		xAxis = SENSITIVITY * Math.max(-35, Math.min(a, 35)) / 15;
+		xAxis = SENSITIVITY * Math.max(-35, Math.min(a, 35)) / 20;
 	});
 }
 
