@@ -566,7 +566,7 @@
 	    });
 	    window.addEventListener('deviceorientation', function (e) {
 	        try {
-	            xAxis = Math.max(-45, Math.min(e.beta, 45)) / 45;
+	            xAxis = Math.max(-30, Math.min(e.beta, 30)) / 25;
 	        }
 	        catch (e) { }
 	    });
