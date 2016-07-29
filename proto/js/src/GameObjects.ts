@@ -8,6 +8,8 @@ export interface GameObject {
 	Texture:HTMLImageElement;
 
 	move(t:number):void;
+	
+	
 
 	distance2To(point:Vector2):number;
 }
@@ -30,6 +32,7 @@ export interface Particle {
 	color:string;
 
 	move(t:number):void;
+	
 
 	distance2To(point:Vector2):number;
 }
@@ -57,6 +60,11 @@ class MovingObject {
 			else { p.y = WORLD_SIZE + (WORLD_SIZE + p.y); }
 		}
 	}
+
+	
+
+
+
 
 	public distance2To(point:Vector2):number {
 		let x = this.Position.x - point.x;
@@ -86,6 +94,27 @@ export class Asteroid extends MovingObject implements GameObject {
 	}
 
 	get Rotation() { return this._alpha; }
+
+	public collision(vx:number,vy:number) {
+		
+		let px = this.Velocity.x;
+		let py = this.Velocity.y; 
+
+
+		
+		
+		
+
+		
+
+		
+		
+		
+		this.Velocity.x = (1*px+1*(2*vx-px));
+		this.Velocity.y = (1*py+1*(2*vy-py));
+		
+
+	}
 }
 
 export class ShootingParticle extends MovingObject implements Particle {
@@ -141,10 +170,14 @@ export class Player extends MovingObject implements GameObject, Controllable {
 
 		this.DirectionVector = new Vector2(Math.cos(a), Math.sin(a));
 	}
+
+	
+
 	get Rotation() { return this._alpha; }
 
 	get Health() { return this._health; }
 	set Health(h:number) { this._health = Math.max(0,h); }
+	
 
 	public shoot():ShootingParticle {
 		let p:Vector2 = Vector2.add(this.Position, this.DirectionVector.scale(25));
@@ -165,6 +198,27 @@ export class Player extends MovingObject implements GameObject, Controllable {
 			this.Velocity = this.Velocity.scale(f);
 		}
 	}
+
+	public collision(vx:number,vy:number) {
+		
+		let px = this.Velocity.x;
+		let py = this.Velocity.y; 
+
+
+		
+		
+		
+
+		
+
+		
+		
+		
+		this.Velocity.x = (1*px+1*(2*vx-px))*0.5;
+		this.Velocity.y = (1*py+1*(2*vy-py))*0.5;
+
+	}
+
 }
 
 import {getRandomWorldPos} from "./Assets";
@@ -216,6 +270,8 @@ export class Alien extends MovingObject implements GameObject, Controllable {
 		this.DirectionVector = v.scale(-1/Math.sqrt(v.len2));
 	}
 
+	
+
 	public shootMaybe():ShootingParticle {
 		if((Date.now() - this._lastShot) < AI_FIRE_COOLDOWN) { return; }
 
@@ -244,6 +300,25 @@ export class Alien extends MovingObject implements GameObject, Controllable {
 	}
 
 	public accelerate(t:number) {}
+
+	public collision(vx:number,vy:number) {
+		
+		let px = this.Velocity.x;
+		let py = this.Velocity.y; 
+
+
+		
+		
+		
+
+		
+
+		
+		
+		
+		this.Velocity.x = (1*vx+1*(2*px-vx));
+		this.Velocity.y = (1*vy+1*(2*py-vy));
+	}
 }
 
 export class Star{

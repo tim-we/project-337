@@ -6,7 +6,7 @@ import {GameObject, Controllable, Particle, Asteroid, Player, Alien, Star} from 
 var canvas:HTMLCanvasElement,
 	ctx:CanvasRenderingContext2D;
 
-var objects:GameObject[] = [];
+var objects:Asteroid[] = [];
 var particles:Particle[] = [];
 var ai:Controllable[] = [];
 var player:Player;
@@ -39,7 +39,7 @@ window.addEventListener("load", function(){
 	ai.push(a);
 
 	player = new Player();
-	objects.push(player);
+	//objects.push(player);
 
 	mainloop();
 });
@@ -138,7 +138,13 @@ function mainloop():void {
 		
 		drawGameObject(o);
 		o.move(td);
+
 	}
+
+	let o:GameObject = player;
+		
+		drawGameObject(o);
+		o.move(td);
 	
 	let dir = 0;
 		if(UserInput.isPressed("left")) { dir -= 1; }
@@ -177,7 +183,38 @@ function mainloop():void {
 		for(let k=0; k<objects.length; k++) {
 			if(p.distance2To(objects[k].Position)< 400) {
 				p.isAlive = false;
+					
+
 			}
 		}
+		if(p.distance2To(player.Position)< 400) {
+				p.isAlive = false;
+					}
 	}
+
+	//objects collision
+
+	for(let i = 0; i<objects.length; i++) {   
+		let o = objects[i];
+		
+		
+		for(let k=0; k<objects.length; k++) {
+			if(o.distance2To(objects[k].Position)< 400) {
+				
+					
+
+			}
+		}
+		if(o.distance2To(player.Position)< 400) {
+				player.collision(o.Velocity.x,o.Velocity.y);
+				o.collision(player.Velocity.x,player.Velocity.y);
+					}
+	}
+	
+
+
+	
+	
+	
+
 }

@@ -75,7 +75,7 @@
 	    objects.push(a);
 	    ai.push(a);
 	    player = new GameObjects_1.Player();
-	    objects.push(player);
+	    //objects.push(player);
 	    mainloop();
 	});
 	function clearctx() {
@@ -138,10 +138,13 @@
 	    }
 	    //draw gameobjects (includes player)
 	    for (var i = 0; i < objects.length; i++) {
-	        var o = objects[i];
-	        drawGameObject(o);
-	        o.move(td);
+	        var o_1 = objects[i];
+	        drawGameObject(o_1);
+	        o_1.move(td);
 	    }
+	    var o = player;
+	    drawGameObject(o);
+	    o.move(td);
 	    var dir = 0;
 	    if (UserInput.isPressed("left")) {
 	        dir -= 1;
@@ -180,6 +183,21 @@
 	            if (p.distance2To(objects[k].Position) < 400) {
 	                p.isAlive = false;
 	            }
+	        }
+	        if (p.distance2To(player.Position) < 400) {
+	            p.isAlive = false;
+	        }
+	    }
+	    //objects collision
+	    for (var i = 0; i < objects.length; i++) {
+	        var o_2 = objects[i];
+	        for (var k = 0; k < objects.length; k++) {
+	            if (o_2.distance2To(objects[k].Position) < 400) {
+	            }
+	        }
+	        if (o_2.distance2To(player.Position) < 400) {
+	            player.collision(o_2.Velocity.x, o_2.Velocity.y);
+	            o_2.collision(player.Velocity.x, player.Velocity.y);
 	        }
 	    }
 	}
@@ -349,6 +367,12 @@
 	        enumerable: true,
 	        configurable: true
 	    });
+	    Asteroid.prototype.collision = function (vx, vy) {
+	        var px = this.Velocity.x;
+	        var py = this.Velocity.y;
+	        this.Velocity.x = (1 * px + 1 * (2 * vx - px));
+	        this.Velocity.y = (1 * py + 1 * (2 * vy - py));
+	    };
 	    return Asteroid;
 	}(MovingObject));
 	exports.Asteroid = Asteroid;
@@ -425,6 +449,12 @@
 	            this.Velocity = this.Velocity.scale(f);
 	        }
 	    };
+	    Player.prototype.collision = function (vx, vy) {
+	        var px = this.Velocity.x;
+	        var py = this.Velocity.y;
+	        this.Velocity.x = (1 * px + 1 * (2 * vx - px)) * 0.5;
+	        this.Velocity.y = (1 * py + 1 * (2 * vy - py)) * 0.5;
+	    };
 	    return Player;
 	}(MovingObject));
 	exports.Player = Player;
@@ -480,6 +510,12 @@
 	        return;
 	    };
 	    Alien.prototype.accelerate = function (t) { };
+	    Alien.prototype.collision = function (vx, vy) {
+	        var px = this.Velocity.x;
+	        var py = this.Velocity.y;
+	        this.Velocity.x = (1 * vx + 1 * (2 * px - vx));
+	        this.Velocity.y = (1 * vy + 1 * (2 * py - vy));
+	    };
 	    return Alien;
 	}(MovingObject));
 	exports.Alien = Alien;
