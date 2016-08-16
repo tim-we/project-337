@@ -98,6 +98,7 @@ export function init(parent:HTMLElement, _c:Vector, _p:AbstractPlayer[], _a:Aste
 		render();
 
 	initBackground();
+	
 }
 
 export function stop() {

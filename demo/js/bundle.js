@@ -55,8 +55,10 @@
 	var Players = [];
 	var Asteroids = [];
 	var CameraPosition = new Basics_1.Vector(0, 0);
-	var me = new Player_1.Player("Me");
-	Players.push(me);
+	var ws = null;
+	var changed = false;
+	var myID = 0;
+	var me = null;
 	window.addEventListener("load", function () {
 	    if (DEBUG) {
 	        alert("debug info in console [Ctrl+Shift+J]");
@@ -74,20 +76,84 @@
 	        var v = o.vector.scaled(100);
 	        Asteroids.push(new Asteroid_1.Asteroid(v));
 	    }
-	    Players.push(new Player_1.OtherPlayer("that other guy"));
 	});
 	function update(delta) {
 	    Players.map(function (p) { p.move(delta); });
 	    Asteroids.map(function (a) { a.move(delta); });
-	    CameraPosition.x = me.Position.x;
-	    CameraPosition.y = me.Position.y;
-	    var dir = -UserInput.getAxisX();
-	    if (dir != 0) {
-	        me.Orientation.change(dir * cfg.PLAYER_ROTATION_SPEED * delta);
+	    if (me && myID) {
+	        CameraPosition.x = me.Position.x;
+	        CameraPosition.y = me.Position.y;
+	        var dir = -UserInput.getAxisX();
+	        if (dir != 0) {
+	            me.Orientation.change(dir * cfg.PLAYER_ROTATION_SPEED * delta);
+	            changed = true;
+	        }
+	        if (UserInput.isPressed("up")) {
+	            me.accelerate(delta);
+	            changed = true;
+	        }
 	    }
-	    if (UserInput.isPressed("up")) {
-	        me.accelerate(delta);
+	}
+	function initConnection() {
+	    ws = new WebSocket("ws://awesome-projects.eu:8080/echo");
+	    ws.onclose = function () {
+	        console.log('connection lost');
+	        ws = null;
+	        setTimeout(initConnection, 1000);
+	    };
+	    ws.onmessage = function (e) {
+	        var msg = JSON.parse(e.data.toString());
+	        if (msg.a) {
+	            serverActionHandler(msg);
+	        }
+	    };
+	    ws.onopen = function () {
+	        ws.send(JSON.stringify({
+	            a: "join",
+	            v: "0.1",
+	            n: ""
+	        }));
+	    };
+	}
+	function serverActionHandler(msg) {
+	    if (msg.a == "denied") {
+	        if (ws) {
+	            ws.close();
+	        }
+	        me = null;
+	        alert('Could not join server.\n\nReason:\n' + msg.reason);
 	    }
+	    else if (msg.a == "joined") {
+	        me = createPlayerFromServerData(msg.data);
+	        myID = msg.data.id;
+	        setInterval(function () {
+	            if (changed) {
+	                changed = false;
+	                ws.send(JSON.stringify({
+	                    p: me.Position,
+	                    v: me.Velocity,
+	                    a: me.Orientation.alpha
+	                }));
+	            }
+	        }, 1000 / 25);
+	    }
+	    else if (msg.a == "update" && msg.type == "game") {
+	        Players = [];
+	        msg.players.map(function (p) {
+	            var player = createPlayerFromServerData(p.data);
+	            Players.push(player);
+	            if (p.id == myID) {
+	                me = player;
+	            }
+	        });
+	    }
+	}
+	function createPlayerFromServerData(data) {
+	    var p = new Player_1.Player(data.n);
+	    p.Position = new Basics_1.Vector(data.p.x, data.p.y);
+	    p.Velocity = new Basics_1.Vector(data.v.x, data.v.y);
+	    p.Orientation.set(data.a);
+	    return p;
 	}
 	//# sourceMappingURL=Game.js.map
 
